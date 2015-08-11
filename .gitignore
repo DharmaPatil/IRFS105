@@ -74,3 +74,15 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Avr binary files
+
+*.bin
+*.eep
+*.fuse
+*.hfs
+*.lfs
+*.lock
+*.lss
+*.map
+*.sig

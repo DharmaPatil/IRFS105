@@ -1,0 +1,89 @@
+# depslib dependency file v1.0
+1438855628 source:c:\users\kholomenyuk\yandexdisk\irfs\irfs104\fuse.c
+	<avr/io.h>
+
+1438855773 source:c:\users\kholomenyuk\yandexdisk\irfs\irfs104\main.c
+	<avr/io.h>
+
+1438872813 source:c:\users\user\yandexdisk\irfs\irfs104\fuse.c
+	<avr/io.h>
+
+1438872817 source:c:\users\user\yandexdisk\irfs\irfs104\src\fsm_messages.c
+	"inc/fsm_messages.h"
+
+1438872817 source:c:\users\user\yandexdisk\irfs\irfs104\src\fsm_timers.c
+	"inc/fsm_timers.h"
+
+1439208915 source:d:\eugen\irfs\irfs105b\fuse.c
+	<avr/io.h>
+
+1439210956 source:d:\eugen\irfs\irfs105b\main.c
+	<avr/io.h>
+	<stdint.h>
+	<avr/eeprom.h>
+	<avr/interrupt.h>
+	<avr/wdt.h>
+	<avr/sleep.h>
+	<util/delay.h>
+	<util/crc16.h>
+	"inc/main.h"
+	"inc/soft_spi.h"
+	"inc/i2csoft.h"
+	"inc/cc2500.h"
+	"inc/adc.h"
+	"inc/ct_assert.h"
+	"inc/fsm_timers.h"
+	"inc/fsm_messages.h"
+
+1439148382 d:\eugen\irfs\irfs105b\inc\main.h
+	<stdint.h>
+	"inc/ct_assert.h"
+
+1439204445 d:\eugen\irfs\irfs105b\inc\soft_spi.h
+	<avr/io.h>
+	<stdint.h>
+
+1439210884 d:\eugen\irfs\irfs105b\inc\i2csoft.h
+
+1439204757 d:\eugen\irfs\irfs105b\inc\cc2500.h
+	<avr/io.h>
+	<util/delay.h>
+	<stdint.h>
+	"inc/soft_spi.h"
+
+1439148574 d:\eugen\irfs\irfs105b\inc\adc.h
+	<avr/io.h>
+	<stdint.h>
+
+1438872816 d:\eugen\irfs\irfs105b\inc\ct_assert.h
+
+1439147032 d:\eugen\irfs\irfs105b\inc\fsm_timers.h
+	<stdint.h>
+
+1439148640 d:\eugen\irfs\irfs105b\inc\fsm_messages.h
+	<stdint.h>
+
+1439130428 source:d:\eugen\irfs\irfs105b\src\adc.c
+	<avr/io.h>
+	"inc/adc.h"
+
+1439206267 source:d:\eugen\irfs\irfs105b\src\cc2500.c
+	"inc/cc2500.h"
+
+1439202819 source:d:\eugen\irfs\irfs105b\src\cc2500_simple_link_reg_config.c
+	<inc/cc2500.h>
+
+1439148670 source:d:\eugen\irfs\irfs105b\src\fsm_messages.c
+	"inc/fsm_messages.h"
+
+1439145210 source:d:\eugen\irfs\irfs105b\src\fsm_timers.c
+	"inc/fsm_timers.h"
+
+1439130482 source:d:\eugen\irfs\irfs105b\src\i2csoft.c
+	<avr/io.h>
+	<util/delay.h>
+	"inc/i2csoft.h"
+
+1439148548 source:d:\eugen\irfs\irfs105b\src\soft_spi.c
+	"inc/soft_spi.h"
+

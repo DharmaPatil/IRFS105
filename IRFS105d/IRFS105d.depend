@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1438855628 source:c:\users\kholomenyuk\yandexdisk\irfs\irfs104\fuse.c
+	<avr/io.h>
+
+1438855773 source:c:\users\kholomenyuk\yandexdisk\irfs\irfs104\main.c
+	<avr/io.h>
+
+1438872813 source:c:\users\user\yandexdisk\irfs\irfs104\fuse.c
+	<avr/io.h>
+
+1438872817 source:c:\users\user\yandexdisk\irfs\irfs104\src\fsm_messages.c
+	"inc/fsm_messages.h"
+
+1438872817 source:c:\users\user\yandexdisk\irfs\irfs104\src\fsm_timers.c
+	"inc/fsm_timers.h"
+

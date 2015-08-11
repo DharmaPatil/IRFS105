@@ -88,6 +88,17 @@ int main(void)
     sei(); //enable interrupts
 
     while(1) {
+        for (uint8_t i = 0; i< 10; i++) {
+          _spi_start();
+          spi_TxRx(0x9D);
+          _spi_stop();
+          _delay_ms(100);
+          PORTC |= _BV(PC2); //blink for test
+          _delay_ms(300);
+          PORTC &= ~_BV(PC2);
+          _delay_ms(200);
+        }
+
       cc_table_state[CC_state]();
 
 
@@ -157,8 +168,9 @@ inline void InitGPIO(void) {
 
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
-  _delay_ms(1000);
-  CC_state=CC_TX;
+  //_delay_ms(1000);
+  PORTC &= ~_BV(PC2);
+  CC_state=CC_RX;
 }
 
 void ccTx(void) {
@@ -168,7 +180,7 @@ void ccTx(void) {
 
 void ccRx(void) {
   receive();
-
+  PORTC |= _BV(PC2);
   CC_state=CC_IDLE;
 }
 

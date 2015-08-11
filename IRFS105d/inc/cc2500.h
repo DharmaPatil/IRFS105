@@ -21,10 +21,29 @@ strobes, burst bit is zero
 #include "inc/soft_spi.h"
 
 #define ADDR(mask, addr) ((mask)|(addr))
-#define CC_N_REG   0x2F //размер массива конфигурации
+#define CC_N_REG   25   //размер массива конфигурации
 #define RW_F       0x80 //READ! flag
 #define BRST_F     0x40 //Burst access to regs
 
+#define PKTSTATUS_CRC_OK (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(7)) /*The last CRC comparison matched.
+                                                                                  Cleared whenentering/restarting RX mode.
+                                                                                  Only valid if PKTCTRL0.CC2400_EN=1.*/
+#define PKTSTATUS_CS (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(6)) //Carrier sense
+#define PKTSTATUS_PQT_REACHED (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(5))
+#define PKTSTATUS_CCA (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(4)) //Channel is clear
+#define PKTSTATUS_SFD (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(3)) //Sync word found
+#define PKTSTATUS_GDO2 (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(2)) //Current GDO2 value
+#define PKTSTATUS_GDO0 (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(0)) //Current GDO0 value
+
+#define MARXSTATE_IDLE_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 1 )
+#define MARXSTATE_RX_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 13 )
+#define MARXSTATE_RX_END_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 14 )
+#define MARXSTATE_RXFIFO_OVERFLW_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 17 )
+#define MARXSTATE_TX_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 19 )
+#define MARXSTATE_TX_END_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 20 )
+#define MARXSTATE_TXFIFOUNDFWL_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 22 )
+
+#define RXBYTES_N spi_TxRx(ADDR(BRST_F|RW_F, CC2500_RXBYTES)) //return bumber bytes in RX FIFO
 
 // CC2500 STROBE, CONTROL AND STATUS REGISTER
 #define CC2500_IOCFG2       0x00        // GDO2 output pin configuration

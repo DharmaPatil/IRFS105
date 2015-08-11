@@ -7,11 +7,12 @@
 ********************************************************/
 
 #include "inc/cc2500.h"
+#include "inc/ct_assert.h"
 //#include <avr/cpufunc.h>
 //#include "inc/cc2500_config.h"
 #define PA_TABLE {0xFE,0x00,0x00,0x00,0x00,0x00,0x00,0x00,}
 
-extern const uint8_t preferredSettings[22][2];
+extern const uint8_t preferredSettings[][2];
 static const uint8_t pa_table[8] = PA_TABLE;
 
 
@@ -122,7 +123,7 @@ void command(uint8_t d) { // give commands to CC
 void receive() {
 command(SFRX); // command to flush RX FIFO
 _delay_ms(1);
-command(SCAL);
+//command(SCAL);
 _delay_ms(1);
 command(SRX);  // command to receive data wirelessly
 
@@ -132,18 +133,37 @@ _spi_start();
 while(MISO_STATE){;}
 
 while ( !PKTSTATUS_CS ) {;} //delay until Carrier Sense detected
-while ( !PKTSTATUS_SFD ) {;} //delay until sync word found
+//while ( !PKTSTATUS_SFD ) {;} //delay until sync word found
+while ( !MARXSTATE_RX_END_STATE) {;} //delay until RX end
+
+if (!RXBYTES_N) { //exit if RXFIFO empty(with CRC AUTO FLUSH)
+  return;
+}
 
 _spi_start();
 spi_TxRx(0xFF); // rx FIFO address burst mode
 p=spi_TxRx(0x00); // data byte1
 q=spi_TxRx(0x00);// data byte2
-r=spi_TxRx(0x00);// data byte3
-_spi_stop();
+r=spi_TxRx(0x00);// data byte3. Рекомендуется считать фифо 2 раза, непонятно почему
+//_spi_stop();
 command(SFRX); // flush receiver FIFO
 command(SIDLE); // turn CC2500 into idle mode
-command(SCAL);
-PORTD=r;
+//command(SCAL);
+
+if (p == 0x55) { //test
+  PORTC |= _BV(PC3);
+  _delay_ms(200);
+}
+if (q == 0xAA) {
+  PORTC |= _BV(PC4);
+  _delay_ms(200);
+}
+if (r == 0xBB) {
+  PORTC |= _BV(PC5);
+  _delay_ms(200);
+}
+PORTC &= ~(_BV(PC3) | _BV(PC4) | _BV(PC5) );
+
 }
 
 void send() {  // send data in CC wirelessly

@@ -142,14 +142,15 @@ void send() {  // send data in CC wirelessly
 command(SIDLE);    //turn CC2500 into idle mode
 command(SFTX);      //flush tx FIFO
 
-command(SCAL);
+//command(SCAL);
 _spi_start();
 while(MISO_STATE); //MISO
 spi_TxRx(0x7F);    // tx FIFO address in burst mode
 spi_TxRx(0x55); // data byte1
 spi_TxRx(0xAA); // data byte2
 spi_TxRx(0xBB); //data byte3
-_spi_stop();
+//_spi_stop();
 command(STX);  //command to send data in tx FIFO wirelessly
-_delay_us(10);
+while (!MARXSTATE_TX_END_STATE) {;} //wait until TX END
+//_delay_us(10);
 }

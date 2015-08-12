@@ -75,28 +75,46 @@ void InitCC2500(void) {
   cc2500_reset();
   _spi_stop();
   _delay_ms(5);
-  for(uint8_t i=0; i<CC_N_REG; i++) {
+
+
+for (uint16_t i = 0; i<100; i++) {
+  cc2500_get_status(CC2500_PARTNUM);
+  cc2500_get_status(CC2500_VERSION);
+  _delay_ms(10);
+}
+
+
+
+  //if (cc2500_get_status(CC2500_PARTNUM) == 0x80) {
     //
+    for(uint8_t i=0; i<CC_N_REG; i++) {
+      //
+      _delay_ms(5);
+      _spi_start();
+      while(MISO_STATE); //wait
+      spi_TxRx(preferredSettings[i][0]);  //address byte, Write, BRST=0
+      spi_TxRx(preferredSettings[i][1]);  //data byte
+      //spi_TxRx(i);                //address byte Какой порядок записи регистров?
+      //spi_TxRx(CC_rfSettings[i]); // data byte
+      _spi_stop();
+    }
+    _delay_ms(5);
+
+
     _spi_start();
-    while(MISO_STATE); //wait
-    spi_TxRx(preferredSettings[i][0]);  //address byte, Write, BRST=0
-    spi_TxRx(preferredSettings[i][1]);  //data byte
-    //spi_TxRx(i);                //address byte Какой порядок записи регистров?
-    //spi_TxRx(CC_rfSettings[i]); // data byte
-    _spi_start();
-  }
-  _delay_ms(5);
+    while(MISO_STATE);
+    spi_TxRx(ADDR(BRST_F, CC2500_PATABLE)); // PA_TABLE init
+    for (uint8_t i=0; i<8; i++) {
+      spi_TxRx(pa_table[i]);
+    }
+    _delay_ms(5);
+    _spi_stop();
 
-  spi_TxRx(ADDR(BRST_F, CC2500_PATABLE)); // PA_TABLE init
-  for (uint8_t i=0; i<8; i++) {
-    spi_TxRx(pa_table[i]);
-  }
-  _delay_ms(5);
-
-  command(SIDLE);
-  command(SFRX);
-  command(SFTX);
-
+    command(SIDLE);
+    command(SFRX);
+    command(SFTX);
+    _spi_stop();
+  //}//check PARTNUM
 } //void cc2500_init(void)
 
 /* sotware reset from datasheet */
@@ -132,11 +150,18 @@ command(SRX);  // command to receive data wirelessly
 _spi_start();
 while(MISO_STATE){;}
 
-while ( !PKTSTATUS_CS ) {;} //delay until Carrier Sense detected
+for (uint16_t i =0 ; i<100; i++) {
+  cc2500_get_status(CC2500_PARTNUM);
+  cc2500_get_status(CC2500_VERSION);
+  _delay_ms(10);
+}
+while ( !(cc2500_get_status(CC2500_PKTSTATUS) & PKTSTATUS_CS) ) {
+    ;
+} //block until Carrier Sense detected
 //while ( !PKTSTATUS_SFD ) {;} //delay until sync word found
-while ( !MARXSTATE_RX_END_STATE) {;} //delay until RX end
+while ( !(cc2500_get_status(CC2500_MARCSTATE) & MARXSTATE_RX_END_STATE) ) {;} //delay until RX end
 
-if (!RXBYTES_N) { //exit if RXFIFO empty(with CRC AUTO FLUSH)
+if ( cc2500_get_status(CC2500_RXBYTES) == 0 ) { //exit if RXFIFO empty(with CRC AUTO FLUSH)
   return;
 }
 
@@ -181,3 +206,13 @@ _spi_stop();
 command(STX);  //command to send data in tx FIFO wirelessly
 _delay_us(10);
 }
+
+uint8_t cc2500_get_status(uint8_t address) {
+  _spi_start();
+  while(MISO_STATE);
+  spi_TxRx(ADDR(BRST_F|RW_F, address));
+  uint8_t status = spi_TxRx(0x00);
+  _spi_stop();
+  return status;
+}
+

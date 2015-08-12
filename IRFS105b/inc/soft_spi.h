@@ -40,7 +40,8 @@
 #define CS_LOW (CS_PORT &= (~(1<<CS_PIN)))
 #define CS_HIGH (CS_PORT |= (1<<CS_PIN))
 
-#define MISO_STATE (bit_is_set(MISO_PORT, MISO_PIN))
+//#define MISO_STATE (bit_is_set(MISO_PORT, MISO_PIN))
+#define MISO_STATE (MISO_PORT & _BV(MISO_PIN))
 
 /*#define MOSI_HIGH (GPIOB->BSRR = (uint32_t)GPIO_PIN_15)
 #define MOSI_LOW (GPIOB->BSRR = (uint32_t)GPIO_PIN_15 << 16)

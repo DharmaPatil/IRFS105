@@ -53,10 +53,10 @@ inline void InitSystemTimer(void);
 inline void InitGPIO(void);
 //inline void InitEXTI(void);
 //прототипы функций состояний конечных автоматов
-void ccIdle(void);
-void ccTx(void);
-void ccRx(void);
-void ccCal(void);
+void ccIdle(void) __attribute__ ((used));
+void ccTx(void) __attribute__ ((used));
+void ccRx(void) __attribute__ ((used));
+void ccCal(void) __attribute__ ((used));
 /* END Func Prototupes ************************************************************/
 
 /* array function pointers*/
@@ -87,11 +87,10 @@ int main(void)
     //wdt_enable(WDTO_2S);
     sei(); //enable interrupts
 
-    while(1) {
-        for (uint8_t i = 0; i< 10; i++) {
-          _spi_start();
-          spi_TxRx(0x9D);
-          _spi_stop();
+    for (uint8_t i = 0; i<0x0A; i++) {
+          //_spi_start();
+          //spi_TxRx(0x9D);
+          //_spi_stop();
           _delay_ms(100);
           PORTC |= _BV(PC2); //blink for test
           _delay_ms(300);
@@ -99,6 +98,7 @@ int main(void)
           _delay_ms(200);
         }
 
+    while(1) {
       cc_table_state[CC_state]();
 
 
@@ -169,7 +169,8 @@ inline void InitGPIO(void) {
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
   //_delay_ms(1000);
-  PORTC &= ~_BV(PC2);
+  PORTC |= _BV(PC2); //blink for test
+  _delay_ms(100);
   CC_state=CC_RX;
 }
 
@@ -179,8 +180,9 @@ void ccTx(void) {
 }
 
 void ccRx(void) {
+  PORTC &= ~_BV(PC2);
+  _delay_ms(100);
   receive();
-  PORTC |= _BV(PC2);
   CC_state=CC_IDLE;
 }
 

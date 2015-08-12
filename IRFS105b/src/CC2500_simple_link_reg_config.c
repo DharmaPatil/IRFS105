@@ -35,8 +35,8 @@ const uint8_t preferredSettings[][2]=
   {CC2500_CHANNR,      0x03},
   {CC2500_FSCTRL1,     0x0A},
   {CC2500_FREQ2,       0x59},
-  {CC2500_FREQ1,       0xD0},
-  {CC2500_FREQ0,       0x97},
+  {CC2500_FREQ1,       0xCF}, //b4715
+  {CC2500_FREQ0,       0x71}, //
   {CC2500_MDMCFG4,     0x2D},
   {CC2500_MDMCFG3,     0x2F},
   {CC2500_MDMCFG2,     0x13},

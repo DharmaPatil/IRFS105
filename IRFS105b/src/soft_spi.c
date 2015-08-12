@@ -123,14 +123,18 @@ uint8_t spi_TxRx(uint8_t data) {
       else {
         MOSI_LOW; // передать 0
       }
+      _NOP();
+      _NOP();
+      _NOP();
+      _NOP();
       SCK_HIGH; // синхроимпульс
       data <<= 1;     // сдвиг для передачи след бита
       //if (MISO_STATE == 1) { spiReadData |= 0x01; } // читаем бит
       spiReadData |= MISO_STATE; // читаем бит
-      //NOP();
-      //NOP();
+      //_NOP();
       SCK_LOW; // синхроимпульс
     }
+    MOSI_LOW;
     return spiReadData;
 }
 

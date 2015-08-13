@@ -8,10 +8,9 @@
 
 /*
 For register addresses in the range 0x30-0x3D, the burst bit is used to select between
-status registers, burst bit is one, and command
-strobes, burst bit is zero
+status registers, burst bit is one, and command strobes, burst bit is zero
 */
-#pragma once
+
 #ifndef CC2500_H_INCLUDED
 #define CC2500_H_INCLUDED
 
@@ -20,7 +19,7 @@ strobes, burst bit is zero
 #include <stdint.h>
 #include "inc/soft_spi.h"
 
-#define ADDR(mask, addr) ((mask)|(addr))
+#define ADDR(mask, addr) ((mask)|(addr)) //Ќаверное стоит переработать в более общем виде
 #define CC_N_REG   25   //размер массива конфигурации
 #define RW_F       0x80 //READ! flag
 #define BRST_F     0x40 //Burst access to regs
@@ -28,20 +27,20 @@ strobes, burst bit is zero
 #define PKTSTATUS_CRC_OK (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(7)) /*The last CRC comparison matched.
                                                                                   Cleared whenentering/restarting RX mode.
                                                                                   Only valid if PKTCTRL0.CC2400_EN=1.*/
-#define PKTSTATUS_CS (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(6)) //Carrier sense
-#define PKTSTATUS_PQT_REACHED (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(5))
-#define PKTSTATUS_CCA (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(4)) //Channel is clear
-#define PKTSTATUS_SFD (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(3)) //Sync word found
-#define PKTSTATUS_GDO2 (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(2)) //Current GDO2 value
-#define PKTSTATUS_GDO0 (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(0)) //Current GDO0 value
+#define PKTSTATUS_CS (_BV(6))             //Carrier sense
+#define PKTSTATUS_PQT_REACHED (_BV(5))
+#define PKTSTATUS_CCA (_BV(4))            //Channel is clear
+#define PKTSTATUS_SFD (_BV(3))            //Sync word found
+#define PKTSTATUS_GDO2 (_BV(2))           //Current GDO2 value
+#define PKTSTATUS_GDO0 (_BV(0))           //Current GDO0 value
 
-#define MARXSTATE_IDLE_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 1 )
-#define MARXSTATE_RX_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 13 )
-#define MARXSTATE_RX_END_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 14 )
-#define MARXSTATE_RXFIFO_OVERFLW_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 17 )
-#define MARXSTATE_TX_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 19 )
-#define MARXSTATE_TX_END_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 20 )
-#define MARXSTATE_TXFIFOUNDFWL_STATE ( spi_TxRx(ADDR(BRST_F|RW_F, CC2500_MARCSTATE)) & 22 )
+#define MARXSTATE_IDLE_STATE              0x01
+#define MARXSTATE_RX_STATE                0x0D
+#define MARXSTATE_RX_END_STATE            0x0E
+#define MARXSTATE_RXFIFO_OVERFLW_STATE    0x11
+#define MARXSTATE_TX_STATE                0x13
+#define MARXSTATE_TX_END_STATE            0x14
+#define MARXSTATE_TXFIFOUNDFWL_STATE      0x16
 
 #define RXBYTES_N spi_TxRx(ADDR(BRST_F|RW_F, CC2500_RXBYTES)) //return bumber bytes in RX FIFO
 
@@ -132,41 +131,19 @@ strobes, burst bit is zero
 #define SAFC         0x37        // Perform AFC adjustment of the frequency synthesizer
 #define SWOR         0x38        // Start automatic RX polling sequence (Wake-on-Radio)
 #define SPWD         0x39        // Enter power down mode when CSn goes high.
-#define SFRX         0x3A        // Flush the RX FIFO buffer.
-#define SFTX         0x3B        // Flush the TX FIFO buffer.
+#define SFRX         0x3A        // Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states.
+#define SFTX         0x3B        // Flush the TX FIFO buffer. *********
 #define SWORRST      0x3C        // Reset real time clock.
 #define SNOP         0x3D        // No operation. May be used to pad strobe commands to two
                                  // bytes for simpler software.
 
-
-//int main()
-//{
-//unsigned int j;
-//uint8_t i,b;
-//_delay_ms(5);
-//SPI_init();
-//PORTC|=(1<<CSn);
-//for(i=0x00;i<0x2F;i++)   // configure registers of CC2500
-//{
-//PORTC=(0<<CSn);
-//while(bit_is_set(PINB,PB4));
-//SPI_TX(i); //address byte
-//SPI_TX(CC_rfSettings[i]);// data byte
-//PORTC|=(1<<CSn);
-//}
-//while(1)
-//{
-////use send()in transmitter and receive() in receiver
-//send();
-////receive();
-//}
-//}
 
 void cc2500_reset(void);
 void InitCC2500(void);
 void command(uint8_t a); // give commands to CC
 void send();
 void receive();
+uint8_t cc2500_get_status(uint8_t address);
 
 
 #endif // CC2500_H_INCLUDED

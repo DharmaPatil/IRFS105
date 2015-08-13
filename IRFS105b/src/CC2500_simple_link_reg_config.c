@@ -25,6 +25,17 @@
 #include <inc/cc2500.h>
 #include "inc/ct_assert.h"
 
+/*    freq1 freq0
+b4712 CF    B0
+b4714 CF    89
+b4715 CF    71
+B4700 D0    A7
+
+D4713 D0    B8
+D4702 D0    7D
+D4714 CF    A2
+
+*/
 
 const uint8_t preferredSettings[][2]=
 {
@@ -35,8 +46,8 @@ const uint8_t preferredSettings[][2]=
   {CC2500_CHANNR,      0x03},
   {CC2500_FSCTRL1,     0x0A},
   {CC2500_FREQ2,       0x59},
-  {CC2500_FREQ1,       0xCF}, //b4715
-  {CC2500_FREQ0,       0x71}, //
+  {CC2500_FREQ1,       0xCF}, //b4715 CF
+  {CC2500_FREQ0,       0x89}, //  89
   {CC2500_MDMCFG4,     0x2D},
   {CC2500_MDMCFG3,     0x2F},
   {CC2500_MDMCFG2,     0x13},

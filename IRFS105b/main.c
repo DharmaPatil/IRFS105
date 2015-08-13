@@ -75,6 +75,7 @@ int main(void)
     InitTimers();
     InitMessages();
     InitCC2500();
+    _delay_ms(5000);
     //InitEXTI();
     //MCUCR |= (_BV(ISC11) | _BV(ISC01));
 
@@ -87,7 +88,7 @@ int main(void)
     //wdt_enable(WDTO_2S);
     sei(); //enable interrupts
 
-    for (uint8_t i = 0; i<0x0A; i++) {
+    for (uint8_t i = 0; i<0x05; i++) {
           //_spi_start();
           //spi_TxRx(0x9D);
           //_spi_stop();

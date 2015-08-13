@@ -24,12 +24,19 @@
 // назначение выводов порта
 #define SCK_PORT   PORTB  // выход - SCLK
 #define SCK_PIN    PB1
+#define SCK_DDR    DDRB
+
 #define MOSI_PORT  PORTB  // выход - MOSI
 #define MOSI_PIN   PB2
-#define MISO_PORT  PINB   // вход  - MISO
-#define MISO_PIN   PB0
+#define MOSI_DDR   DDRB
+
+#define MISO_PORT  PIND   // вход  - MISO
+#define MISO_PIN   PD7
+#define MISO_DDR   DDRD
+
 #define CS_PORT    PORTD  // выход - Chip Select
 #define CS_PIN     PD5
+#define CS_DDR     DDRD
 
 #define SCK_LOW (SCK_PORT &= (~(1<<SCK_PIN))) //не использую _BV(), не помню глубину вложенности макросов
 #define SCK_HIGH (SCK_PORT |= (1<<SCK_PIN))

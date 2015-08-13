@@ -1,7 +1,7 @@
 #include <avr/io.h>
-//0xDE
+// 0xDC 0xDF
 
 FUSES = {
-    .low = 0x9C,
+    .low = 0xDC,
     .high = 0xDF
 };

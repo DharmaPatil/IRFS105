@@ -147,7 +147,7 @@ void send() {  // send data in CC wirelessly
   _spi_stop();
 
   command(STX);  //command to send data in tx FIFO wirelessly
-  while (!MARXSTATE_TX_END_STATE) {;} //wait until TX END
+  while ( !(cc2500_get_status(CC2500_MARCSTATE) & MARXSTATE_TX_END_STATE) ) {;} //wait until TX END
   //_delay_us(10);
   command(SFTX);
   command(SIDLE);    //turn CC2500 into idle mode

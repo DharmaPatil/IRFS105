@@ -30,9 +30,10 @@
 #define MOSI_PIN   PB2
 #define MOSI_DDR   DDRB
 
-#define MISO_PORT  PIND   // вход  - MISO
-#define MISO_PIN   PD7
-#define MISO_DDR   DDRD
+#define MISO_PORT    PORTD   // вход  - MISO
+#define MISO_PIN_REG PIND
+#define MISO_PIN     PD7
+#define MISO_DDR     DDRD
 
 #define CS_PORT    PORTD  // выход - Chip Select
 #define CS_PIN     PD5
@@ -48,7 +49,7 @@
 #define CS_HIGH (CS_PORT |= (1<<CS_PIN))
 
 //#define MISO_STATE (bit_is_set(MISO_PORT, MISO_PIN))
-#define MISO_STATE (MISO_PORT & _BV(MISO_PIN))
+#define MISO_STATE (!!(MISO_PIN_REG & _BV(MISO_PIN))) //(PIND & _BV(PD7))
 
 /*#define MOSI_HIGH (GPIOB->BSRR = (uint32_t)GPIO_PIN_15)
 #define MOSI_LOW (GPIOB->BSRR = (uint32_t)GPIO_PIN_15 << 16)

@@ -94,9 +94,9 @@ int main(void)
           //_spi_stop();
           _delay_ms(100);
           PORTC |= _BV(PC2); //blink for test
-          _delay_ms(300);
+          _delay_ms(100);
           PORTC &= ~_BV(PC2);
-          _delay_ms(200);
+          _delay_ms(100);
         }
 
     while(1) {

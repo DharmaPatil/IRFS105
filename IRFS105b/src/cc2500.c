@@ -29,19 +29,7 @@ void InitCC2500(void) {
   _delay_ms(10);
 }*/
 
-  uint8_t status = cc2500_get_status(CC2500_PARTNUM);
-  _delay_ms(15000);
-  PORTC |= _BV(PC2); //blink for test
-  _delay_ms(100);
-  PORTC &= ~_BV(PC2);
-  _delay_ms(200);
-  for(uint8_t i = status; i!=0; i--) {
-    PORTC |= _BV(PC2);
-    _delay_ms(100);
-    PORTC &= ~_BV(PC2);
-  }
-
-  if ( status == 0x80 ) {
+  if (cc2500_get_status(CC2500_PARTNUM) == 0x80) {
     //write config
     for(uint8_t i=0; i<CC_N_REG; i++) {
       //
@@ -159,7 +147,7 @@ void send() {  // send data in CC wirelessly
   _spi_stop();
 
   command(STX);  //command to send data in tx FIFO wirelessly
-  while (!MARXSTATE_TX_END_STATE) {;} //wait until TX END
+  while ( !(cc2500_get_status(CC2500_MARCSTATE) & MARXSTATE_TX_END_STATE) ) {;} //wait until TX END
   //_delay_us(10);
   command(SFTX);
   command(SIDLE);    //turn CC2500 into idle mode
@@ -167,11 +155,10 @@ void send() {  // send data in CC wirelessly
 }
 
 uint8_t cc2500_get_status(uint8_t address) {
-  uint8_t status;
   _spi_start();
   while(MISO_STATE);
   spi_TxRx(ADDR(BRST_F|RW_F, address));
-  status = spi_TxRx(0xFF);
+  uint8_t status = spi_TxRx(0xFF);
   _spi_stop();
   return status;
 }

@@ -58,8 +58,8 @@ uint8_t spi_TxRx(uint8_t data) {
       _NOP();
       SCK_HIGH; // синхроимпульс
       data <<= 1;     // сдвиг для передачи след бита
-      spiReadData |= MISO_STATE; // читаем бит
-      //_NOP();
+      spiReadData |= MISO_STATE; // читаем бит, !! для перевода состояния бита в булевый тип
+      _NOP();
       SCK_LOW; // синхроимпульс
     } //End For
 

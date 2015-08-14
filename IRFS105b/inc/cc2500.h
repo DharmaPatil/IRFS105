@@ -34,6 +34,7 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 #define PKTSTATUS_GDO2 (_BV(2))           //Current GDO2 value
 #define PKTSTATUS_GDO0 (_BV(0))           //Current GDO0 value
 
+#define MASK_MARXSTATE(reg)               ((reg) & 0x1F)
 #define MARXSTATE_IDLE_STATE              0x01
 #define MARXSTATE_RX_STATE                0x0D
 #define MARXSTATE_RX_END_STATE            0x0E

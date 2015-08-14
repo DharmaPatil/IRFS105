@@ -75,7 +75,7 @@ int main(void)
     InitTimers();
     InitMessages();
     InitCC2500();
-    _delay_ms(5000);
+    //_delay_ms(5000);
     //InitEXTI();
     //MCUCR |= (_BV(ISC11) | _BV(ISC01));
 

@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="src\soft_spi.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="652" topLine="1" />
-		</Cursor>
-	</File>
 	<File name="inc\cc2500.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="97" topLine="0" />
+			<Cursor1 position="0" topLine="11" />
 		</Cursor>
 	</File>
-	<File name="inc\cc2500_config.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="inc\ct_assert.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="250" topLine="0" />
+			<Cursor1 position="1218" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="inc\fsm_messages.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -36,32 +31,35 @@
 			<Cursor1 position="63" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="inc\adc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="inc\main.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="85" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="inc\soft_spi.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="inc\adc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1429" topLine="19" />
+			<Cursor1 position="3" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.c" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="inc\soft_spi.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2676" topLine="66" />
+			<Cursor1 position="0" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="main.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5533" topLine="120" />
 		</Cursor>
 		<Folding>
 			<Collapse line="125" />
+			<Collapse line="130" />
+			<Collapse line="134" />
+			<Collapse line="140" />
 		</Folding>
 	</File>
 	<File name="src\CC2500_simple_link_reg_config.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="860" topLine="21" />
+			<Cursor1 position="876" topLine="21" />
 		</Cursor>
 	</File>
 	<File name="src\adc.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -69,13 +67,10 @@
 			<Cursor1 position="759" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\cc2500.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\cc2500.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="987" topLine="6" />
+			<Cursor1 position="4988" topLine="155" />
 		</Cursor>
-		<Folding>
-			<Collapse line="74" />
-		</Folding>
 	</File>
 	<File name="src\fsm_messages.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
@@ -90,6 +85,11 @@
 	<File name="src\i2csoft.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="410" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src\soft_spi.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="37" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

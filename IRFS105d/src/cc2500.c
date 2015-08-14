@@ -87,49 +87,70 @@ void receive() {
   _delay_ms(1);
   command(SRX);  // command to receive data wirelessly
 
-  //while(bit_is_clear(PINC,PC1)); // check GD0pin of CC2500 нужно читать регистр PKTSTATUS
+  while(bit_is_clear(PIND,PD3)); // check GD0pin of CC2500 нужно читать регистр PKTSTATUS
+  while(bit_is_set(PIND, PD3));
 
-  _spi_start();
-  while(MISO_STATE){;}
+  /*_spi_start();
+  while(MISO_STATE){
+      ;
+  }*/
 
   //block until Carrier Sense detected
-  while ( !(cc2500_get_status(CC2500_PKTSTATUS) & PKTSTATUS_CS) ) {
+  /*while ( !(cc2500_get_status(CC2500_PKTSTATUS) & (PKTSTATUS_CS | PKTSTATUS_PQT_REACHED)) ) {
       ;
+  }*/
+  /*while ( !(cc2500_get_status(CC2500_PKTSTATUS) & PKTSTATUS_SFD ) ) { //delay until sync word found
+      ;
+  }*/
+  /*while ( (PIND & _BV(PD3)) == 0) {
+    ; // at gd0 cfg 0x06, wait CS
   }
-  //while ( !PKTSTATUS_SFD ) {;} //delay until sync word found
+  while ( (PIND & _BV(PD3)) != 0) {
+    ; //end packet
+  }*/
+
+
   //block until RX end
-  while ( !(cc2500_get_status(CC2500_MARCSTATE) & MARXSTATE_RX_END_STATE) ) {;}
+  /*while ( MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_RX_END_STATE ) {
+      ;
+  }*/
+  //_delay_ms(20);
 
   //exit if RXFIFO empty(with CRC AUTO FLUSH)
   if ( cc2500_get_status(CC2500_RXBYTES) == 0 ) {
-    return;
+      PORTC |= _BV(PC3) | _BV(PC5);
+      _delay_ms(200);
+      PORTC &= ~(_BV(PC3) | _BV(PC5));
+      return;
   }
 
   _spi_start();
-  spi_TxRx(0xFF); // rx FIFO address burst mode
+  spi_TxRx(ADDR(RW_F|BRST_F, CC2500_RXFIFO)); // rx FIFO address burst mode
   p=spi_TxRx(0xFF); // data byte1
   q=spi_TxRx(0xFF);// data byte2
   r=spi_TxRx(0xFF);// data byte3. –екомендуетс€ считать фифо 2 раза, непон€тно почему
   _spi_stop();
+
   command(SFRX); // flush receiver FIFO if owerflow state
   command(SIDLE); // turn CC2500 into idle mode
   command(SFRX); // flush receiver FIFO in IDDLE mode
   //command(SCAL);
 
   //test LED ON if packet received and data correct
-  if (p == 0x55) {
+  if (p == 0x6A) {
     PORTC |= _BV(PC3);
     _delay_ms(200);
   }
-  if (q == 0xAA) {
+  if (q == 0x6A) {
     PORTC |= _BV(PC4);
     _delay_ms(200);
   }
-  if (r == 0xBB) {
+  if (r == 0x6A) {
     PORTC |= _BV(PC5);
     _delay_ms(200);
   }
-  PORTC &= ~(_BV(PC3) | _BV(PC4) | _BV(PC5) );//LED OFF
+  PORTC &= ~( _BV(PC3) | _BV(PC4) | _BV(PC5) );//LED OFF
+  _delay_ms(100);
 
 }
 
@@ -141,13 +162,19 @@ void send() {  // send data in CC wirelessly
   _spi_start();
   while(MISO_STATE); //MISO
   spi_TxRx(ADDR(BRST_F, CC2500_TXFIFO));    // tx FIFO address in burst mode
-  spi_TxRx(0x55); // data byte1
-  spi_TxRx(0xAA); // data byte2
-  spi_TxRx(0xBB); // data byte3
+  spi_TxRx(0x6A); // data byte1 55
+  spi_TxRx(0x6A); // data byte2 aa
+  spi_TxRx(0x6A); // data byte3 bb
   _spi_stop();
 
   command(STX);  //command to send data in tx FIFO wirelessly
-  while ( !(cc2500_get_status(CC2500_MARCSTATE) & MARXSTATE_TX_END_STATE) ) {;} //wait until TX END
+  _delay_ms(100);
+  /*while ( (PIND & _BV(PD3)) != 0) {
+    ; //end packet
+  }*/
+  /*while ( MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_TX_END_STATE ) {
+      ;
+  } //wait until TX END*/
   //_delay_us(10);
   command(SFTX);
   command(SIDLE);    //turn CC2500 into idle mode

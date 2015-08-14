@@ -86,9 +86,10 @@ void receive() {
   //command(SCAL);
   _delay_ms(1);
   command(SRX);  // command to receive data wirelessly
+  while( (MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_IDLE_STATE) ); //ждать пока не закончится прием пакета
 
-  while(bit_is_clear(PIND,PD3)); // check GD0pin of CC2500 нужно читать регистр PKTSTATUS
-  while(bit_is_set(PIND, PD3));
+  //while(bit_is_clear(PIND,PD3)); // check GD0pin of CC2500 нужно читать регистр PKTSTATUS
+  //while(bit_is_set(PIND, PD3));
 
   /*_spi_start();
   while(MISO_STATE){
@@ -168,7 +169,7 @@ void send() {  // send data in CC wirelessly
   _spi_stop();
 
   command(STX);  //command to send data in tx FIFO wirelessly
-  _delay_ms(100);
+  while( (MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_IDLE_STATE) ); //ждать пока не закончится передача пакета
   /*while ( (PIND & _BV(PD3)) != 0) {
     ; //end packet
   }*/

@@ -22,6 +22,7 @@
 #include "inc/soft_spi.h"
 #include "inc/i2csoft.h"
 #include "inc/cc2500.h"
+#include "inc/lm75.h"
 #include "inc/adc.h"
 #include "inc/ct_assert.h"
 #include "inc/fsm_timers.h"

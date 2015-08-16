@@ -11,6 +11,8 @@ www.eXtremeElectronics.co.in
 #ifndef _I2CSOFT_H
 #define _I2CSOFT_H
 
+#include <stdint.h>
+
 /*
 I/O Configuration
 */

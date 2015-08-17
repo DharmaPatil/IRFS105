@@ -171,7 +171,7 @@ inline void InitGPIO(void) {
 void ccIdle(void) {
   //_delay_ms(1000);
   PORTC |= _BV(PC2); //blink for test
-  _delay_ms(100);
+  _delay_ms(300);
   CC_state=CC_RX;
 }
 
@@ -184,6 +184,7 @@ void ccRx(void) {
   PORTC &= ~_BV(PC2);
   _delay_ms(100);
   receive();
+  //send();
   CC_state=CC_IDLE;
 }
 

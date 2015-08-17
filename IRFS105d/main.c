@@ -155,7 +155,7 @@ inline void InitEXTI(void) {
 
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
-  _delay_ms(1000);
+  _delay_ms(900);
   PORTB |= _BV(PB3);
   _delay_ms(100);
   PORTB &= ~_BV(PB3);

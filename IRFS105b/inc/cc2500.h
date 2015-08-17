@@ -20,7 +20,7 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 #include "inc/soft_spi.h"
 
 #define ADDR(mask, addr) ((mask)|(addr)) //Ќаверное стоит переработать в более общем виде
-#define CC_N_REG   25   //размер массива конфигурации
+#define CC_N_REG   23   //размер массива конфигурации
 #define RW_F       0x80 //READ! flag
 #define BRST_F     0x40 //Burst access to regs
 
@@ -34,14 +34,14 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 #define PKTSTATUS_GDO2 (_BV(2))           //Current GDO2 value
 #define PKTSTATUS_GDO0 (_BV(0))           //Current GDO0 value
 
-#define MASK_MARXSTATE(reg)               ((reg) & 0x1F)
-#define MARXSTATE_IDLE_STATE              0x01
-#define MARXSTATE_RX_STATE                0x0D
-#define MARXSTATE_RX_END_STATE            0x0E
-#define MARXSTATE_RXFIFO_OVERFLW_STATE    0x11
-#define MARXSTATE_TX_STATE                0x13
-#define MARXSTATE_TX_END_STATE            0x14
-#define MARXSTATE_TXFIFOUNDFWL_STATE      0x16
+#define MASK_MARCSTATE(reg)               ((reg) & 0x1F)
+#define MARCSTATE_IDLE_STATE              0x01
+#define MARCSTATE_RX_STATE                0x0D
+#define MARCSTATE_RX_END_STATE            0x0E
+#define MARCSTATE_RXFIFO_OVERFLW_STATE    0x11
+#define MARCSTATE_TX_STATE                0x13
+#define MARCSTATE_TX_END_STATE            0x14
+#define MARCSTATE_TXFIFOUNDFWL_STATE      0x16
 
 #define RXBYTES_N spi_TxRx(ADDR(BRST_F|RW_F, CC2500_RXBYTES)) //return bumber bytes in RX FIFO
 

@@ -86,8 +86,9 @@ void receive() {
   //command(SCAL);
   _delay_ms(1);
   command(SRX);  // command to receive data wirelessly
-  while( (MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_IDLE_STATE) ); //ждать пока не закончится прием пакета
-
+  while( (MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_IDLE_STATE) ) { //ждать пока не закончится прием пакета
+    cc2500_get_status(CC2500_PKTSTATUS);
+  }
   //while(bit_is_clear(PIND,PD3)); // check GD0pin of CC2500 нужно читать регистр PKTSTATUS
   //while(bit_is_set(PIND, PD3));
 
@@ -112,7 +113,7 @@ void receive() {
 
 
   //block until RX end
-  /*while ( MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_RX_END_STATE ) {
+  /*while ( MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_RX_END_STATE ) {
       ;
   }*/
   //_delay_ms(20);
@@ -169,16 +170,20 @@ void send() {  // send data in CC wirelessly
   _spi_stop();
 
   command(STX);  //command to send data in tx FIFO wirelessly
-  while( (MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_IDLE_STATE) ); //ждать пока не закончится передача пакета
+  //ждать пока не закончится передача пакета и трансивер не вернется в состояние IDLE
+  //(нужна соответствующая настройка регистра MCSM0)
+  while( (MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_IDLE_STATE) ) {
+    command(SFTX);
+  }
   /*while ( (PIND & _BV(PD3)) != 0) {
     ; //end packet
   }*/
-  /*while ( MASK_MARXSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARXSTATE_TX_END_STATE ) {
+  /*while ( MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_TX_END_STATE ) {
       ;
   } //wait until TX END*/
   //_delay_us(10);
-  command(SFTX);
-  command(SIDLE);    //turn CC2500 into idle mode
+  //command(SFTX);
+  //command(SIDLE);    //turn CC2500 into idle mode
   command(SFTX);      //flush tx FIFO
 }
 

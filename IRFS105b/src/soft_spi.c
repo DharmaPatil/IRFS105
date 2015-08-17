@@ -5,6 +5,7 @@
  *  @brief
  */
 
+#include <avr/interrupt.h>
 #include "inc/soft_spi.h"
 
 // инициализация SPI

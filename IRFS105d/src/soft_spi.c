@@ -5,6 +5,7 @@
  *  @brief
  */
 
+#include <avr/interrupt.h>
 #include "inc/soft_spi.h"
 
 // инициализация SPI
@@ -42,7 +43,7 @@ void _spi_stop(void) {
 /* read and write one byte through SPI*/
 uint8_t spi_TxRx(uint8_t data) {
     uint8_t spiReadData = 0;
-
+    cli();//disable interrupts
     for(uint8_t i = 0; i<8; i++) {
       spiReadData <<= 1; // сдвиг для передачи след бита
 
@@ -52,18 +53,19 @@ uint8_t spi_TxRx(uint8_t data) {
       else {
         MOSI_LOW; // передать 0
       }
-      _NOP();
-      _NOP();
-      _NOP();
-      _NOP();
+      //_NOP();
+      //_NOP();
+      //_NOP();
+      //_NOP();
       SCK_HIGH; // синхроимпульс
       data <<= 1;     // сдвиг для передачи след бита
       spiReadData |= MISO_STATE; // читаем бит, !! для перевода состояния бита в булевый тип
-      _NOP();
+      //_NOP();
       SCK_LOW; // синхроимпульс
     } //End For
 
     MOSI_LOW;
+    sei(); //enable interrupts
     return spiReadData;
 }
 

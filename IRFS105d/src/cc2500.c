@@ -167,6 +167,11 @@ void send() {  // send data in CC wirelessly
   spi_TxRx(0x6A); // data byte1 55
   spi_TxRx(0x6A); // data byte2 aa
   spi_TxRx(0x6A); // data byte3 bb
+  spi_TxRx(0x6A); // data byte3 bb
+  spi_TxRx(0x6A); // data byte3 bb
+  spi_TxRx(0x6A); // data byte3 bb
+  spi_TxRx(0x6A); // data byte3 bb
+
   _spi_stop();
 
   command(STX);  //command to send data in tx FIFO wirelessly

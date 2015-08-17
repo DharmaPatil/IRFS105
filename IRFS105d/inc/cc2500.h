@@ -20,7 +20,7 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 #include "inc/soft_spi.h"
 
 #define ADDR(mask, addr) ((mask)|(addr)) //Ќаверное стоит переработать в более общем виде
-#define CC_N_REG   25   //размер массива конфигурации
+#define CC_N_REG   37   //размер массива конфигурации
 #define RW_F       0x80 //READ! flag
 #define BRST_F     0x40 //Burst access to regs
 

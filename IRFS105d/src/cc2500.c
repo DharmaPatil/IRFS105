@@ -173,7 +173,7 @@ void send() {  // send data in CC wirelessly
   //ждать пока не закончится передача пакета и трансивер не вернется в состояние IDLE
   //(нужна соответствующая настройка регистра MCSM0)
   while( (MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_IDLE_STATE) ) {
-    command(SFTX);
+    ;//command(SFTX);
   }
   /*while ( (PIND & _BV(PD3)) != 0) {
     ; //end packet

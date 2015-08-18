@@ -177,7 +177,7 @@ void ccIdle(void) {
 }
 
 void ccTx(void) {
-  send();
+  //send();
   CC_state=CC_IDLE;
 }
 

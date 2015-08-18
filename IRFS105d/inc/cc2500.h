@@ -158,8 +158,8 @@ cc2500_status_t InitCC2500(const uint8_t settings[][2]); //const uint8_t* settin
 cc2500_status_t cc2500_fifo_write(uint8_t *w_buf, const uint8_t nbytes);
 cc2500_status_t cc2500_fifo_read(uint8_t *r_buf, const uint8_t nbytes);
 
-void send();
-void receive();
+//void send();
+//void receive();
 
 
 #endif // CC2500_H_INCLUDED

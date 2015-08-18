@@ -1,4 +1,25 @@
-
+// CRC autoflush = false
+// Manchester enable = false
+// Modulation format = MSK
+// RX filter BW = 337.497401
+// Sync word qualifier mode = 30/32 sync word bits detected
+// Data rate = 99.9062
+// TX power = 0
+// Whitening = false
+// Preamble count = 4
+// Carrier frequency = 2463.499906
+// Packet length = 7
+// Phase transition time = 0
+// Channel number = 0
+// Modulated = true
+// Address config = No address check
+// Base frequency = 2463.499906
+// Packet length mode = Fixed packet length mode. Length configured in PKTLEN register
+// Channel spacing = 199.812304
+// Data format = Normal mode
+// CRC enable = false
+// Device address = 0
+// PA table
 
 
 #include <inc/cc2500.h>

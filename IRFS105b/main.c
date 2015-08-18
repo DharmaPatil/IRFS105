@@ -46,6 +46,7 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
+extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
 /* END Global variables **********************************************************/
 
 /*Function prototypes ************************************************************/
@@ -74,7 +75,7 @@ int main(void)
     InitSystemTimer();
     InitTimers();
     InitMessages();
-    InitCC2500();
+    InitCC2500(preferredSettings); //(const uint8_t **)conf(+6bytes of code), preferredSettings
     //_delay_ms(5000);
     //InitEXTI();
     //MCUCR |= (_BV(ISC11) | _BV(ISC01));
@@ -183,7 +184,43 @@ void ccTx(void) {
 void ccRx(void) {
   PORTC &= ~_BV(PC2);
   _delay_ms(100);
-  receive();
+
+  uint8_t receiver_buf[7];
+
+  command(SFRX); // command to flush RX FIFO
+  _delay_ms(1);
+  command(SRX);  // command to receive data wirelessly
+  while( (MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_IDLE_STATE) ) { //ждать пока не закончится прием пакета
+    cc2500_get_status(CC2500_PKTSTATUS);
+  }
+  if ( cc2500_get_status(CC2500_RXBYTES) == 0 ) { //exit if rx fifo empty(autoflush)
+      PORTC |= _BV(PC3) | _BV(PC5);
+      _delay_ms(200);
+      PORTC &= ~(_BV(PC3) | _BV(PC5));
+      return;
+  }
+  cc2500_fifo_read(receiver_buf, 7);
+  command(SFRX); // flush receiver FIFO if owerflow state
+  command(SIDLE); // turn CC2500 into idle mode
+  command(SFRX); // flush receiver FIFO in IDDLE mode
+
+    //test LED ON if packet received and data correct
+  if (receiver_buf[0] == 0x6A) {
+    PORTC |= _BV(PC3);
+    _delay_ms(200);
+  }
+  if (receiver_buf[1] == 0x6A) {
+    PORTC |= _BV(PC4);
+    _delay_ms(200);
+  }
+  if (receiver_buf[2] == 0x6A) {
+    PORTC |= _BV(PC5);
+    _delay_ms(200);
+  }
+  PORTC &= ~( _BV(PC3) | _BV(PC4) | _BV(PC5) );//LED OFF
+  _delay_ms(100);
+
+  //receive();
   //send();
   CC_state=CC_IDLE;
 }

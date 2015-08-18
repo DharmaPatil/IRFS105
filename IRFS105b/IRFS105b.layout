@@ -1,26 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="inc\adc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="inc\cc2500.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="699" topLine="2" />
-		</Cursor>
-	</File>
-	<File name="inc\ct_assert.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1218" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="inc\fsm_messages.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="995" topLine="17" />
-		</Cursor>
-	</File>
 	<File name="inc\fsm_timers.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="208" topLine="0" />
@@ -41,15 +21,12 @@
 			<Cursor1 position="0" topLine="27" />
 		</Cursor>
 	</File>
-	<File name="main.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3724" topLine="128" />
+			<Cursor1 position="7321" topLine="188" />
 		</Cursor>
-		<Folding>
-			<Collapse line="125" />
-		</Folding>
 	</File>
-	<File name="src\CC2500_simple_link_reg_config.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\CC2500_simple_link_reg_config.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1120" topLine="25" />
 		</Cursor>
@@ -59,9 +36,9 @@
 			<Cursor1 position="759" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\cc2500.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src\cc2500.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2529" topLine="78" />
+			<Cursor1 position="5251" topLine="170" />
 		</Cursor>
 	</File>
 	<File name="src\fsm_messages.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -87,6 +64,26 @@
 	<File name="fuse.c" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="63" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="inc\adc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="inc\cc2500.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8728" topLine="127" />
+		</Cursor>
+	</File>
+	<File name="inc\ct_assert.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1218" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="inc\fsm_messages.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="995" topLine="17" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

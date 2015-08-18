@@ -46,6 +46,7 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
+extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
 /* END Global variables **********************************************************/
 
 /*Function prototypes ************************************************************/
@@ -74,7 +75,7 @@ int main(void)
     InitSystemTimer();
     InitTimers();
     InitMessages();
-    InitCC2500();
+    InitCC2500(preferredSettings); //(const uint8_t **)conf(+6bytes of code), preferredSettings
     InitEXTI();
     //MCUCR |= (_BV(ISC11) | _BV(ISC01));
 
@@ -163,7 +164,19 @@ void ccIdle(void) {
 }
 
 void ccTx(void) {
-  send();
+  command(SIDLE);    //turn CC2500 into idle mode
+  command(SFTX);      //flush tx FIFO
+  uint8_t data[7] = {0x6A, 0x6A, 0x6A, 0x6A, 0x6A, 0x6A, 0x6A};
+  cc2500_fifo_write(data, 7);
+  command(STX);  //command to send data in tx FIFO wirelessly
+  //ждать пока не закончится передача пакета и трансивер не вернется в состояние IDLE
+  //(нужна соответствующая настройка регистра MCSM0)
+  while( (MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_IDLE_STATE) ) {
+    ;
+  }
+  command(SFTX);      //flush tx FIFO
+  //send();
+
   CC_state=CC_IDLE;
 }
 

@@ -11,23 +11,17 @@
 
 #define PA_TABLE {0xFE,0x00,0x00,0x00,0x00,0x00,0x00,0x00,}
 
-extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
 static const uint8_t pa_table[8] = PA_TABLE;
 
 uint8_t p,q,r,t; //deleete!
 
 
-void InitCC2500(void) {
-  //Может потом добавить возврат статуса?
+cc2500_status_t InitCC2500(const uint8_t settings[][2]) { //const uint8_t* settings[2], const uint8_t settings[][2]
+  cc2500_status_t status = OK;
+
   cc2500_reset();
   _spi_stop();
   _delay_ms(5);
-
-/*for (uint16_t i = 0; i<100; i++) { //test
-  cc2500_get_status(CC2500_PARTNUM);
-  cc2500_get_status(CC2500_VERSION);
-  _delay_ms(10);
-}*/
 
   if (cc2500_get_status(CC2500_PARTNUM) == 0x80) {
     //write config
@@ -36,8 +30,8 @@ void InitCC2500(void) {
       _delay_ms(5);
       _spi_start();
       while(MISO_STATE); //wait
-      spi_TxRx(preferredSettings[i][0]);  //address byte, Write, BRST=0
-      spi_TxRx(preferredSettings[i][1]);  //data byte
+      spi_TxRx(settings[i][0]);  //address byte, Write, BRST=0
+      spi_TxRx(settings[i][1]);  //data byte
       _spi_stop();
     }
     _delay_ms(5);
@@ -57,6 +51,9 @@ void InitCC2500(void) {
     command(SFTX);
     _spi_stop();
   } //check PARTNUM register
+  else status = ERROR;
+
+  return status;
 } // END void cc2500_init(void)
 
 /* sotware reset from datasheet */
@@ -77,6 +74,44 @@ void command(uint8_t d) { // give commands to CC
   while(MISO_STATE); //wait for stability
   spi_TxRx(d);
   _spi_stop();
+}
+
+/* args ptr to data*/
+cc2500_status_t cc2500_fifo_write(uint8_t *w_buf, const uint8_t nbytes) {
+  cc2500_status_t status = OK;
+
+  //if(nbytes<64) {//size of fifo. Possible transfer >64 if write to fifo under TX/RX and check empty spase
+    _spi_start();
+    while(MISO_STATE); //check MSB of chip status byte
+    //TODO: add check status byte if code size not greater then 8kB
+    spi_TxRx(ADDR(BRST_F, CC2500_TXFIFO));    // tx FIFO address in burst mode
+    for(uint8_t i=0; i<nbytes; i++) {
+      spi_TxRx(w_buf[i]);
+    }
+    _spi_stop();
+  //}
+  //else status = ERROR;
+
+  return status;
+}
+
+cc2500_status_t cc2500_fifo_read(uint8_t *r_buf, const uint8_t nbytes) {
+  cc2500_status_t status = OK;
+
+  //if(nbytes<64) {//size of fifo. Possible transfer >64 if write to fifo under TX/RX and check empty spase
+    _spi_start();
+    while(MISO_STATE); //check MSB of chip status byte
+    //TODO: add check status byte if code size not greater then 8kB
+    spi_TxRx(ADDR(CC_READ_F|BRST_F, CC2500_RXFIFO)); // rx FIFO address burst mode
+    for(uint8_t i=0; i<nbytes; i++) {
+      *r_buf = spi_TxRx(0xFF); // read data byte
+      r_buf++;
+    }
+    _spi_stop();
+  //}
+  //else status = ERROR;
+
+  return status;
 }
 
 //receive data wirelessly with CC
@@ -127,7 +162,7 @@ void receive() {
   }
 
   _spi_start();
-  spi_TxRx(ADDR(RW_F|BRST_F, CC2500_RXFIFO)); // rx FIFO address burst mode
+  spi_TxRx(ADDR(CC_READ_F|BRST_F, CC2500_RXFIFO)); // rx FIFO address burst mode
   p=spi_TxRx(0xFF); // data byte1
   q=spi_TxRx(0xFF);// data byte2
   r=spi_TxRx(0xFF);// data byte3. Рекомендуется считать фифо 2 раза, непонятно почему
@@ -195,7 +230,7 @@ void send() {  // send data in CC wirelessly
 uint8_t cc2500_get_status(uint8_t address) {
   _spi_start();
   while(MISO_STATE);
-  spi_TxRx(ADDR(BRST_F|RW_F, address));
+  spi_TxRx(ADDR(BRST_F|CC_READ_F, address));
   uint8_t status = spi_TxRx(0xFF);
   _spi_stop();
   return status;

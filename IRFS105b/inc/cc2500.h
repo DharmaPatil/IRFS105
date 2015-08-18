@@ -21,10 +21,22 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 
 #define ADDR(mask, addr) ((mask)|(addr)) //Ќаверное стоит переработать в более общем виде
 #define CC_N_REG   37   //размер массива конфигурации
-#define RW_F       0x80 //READ! flag
+#define CC_READ_F       0x80 //READ! flag
 #define BRST_F     0x40 //Burst access to regs
 
-#define PKTSTATUS_CRC_OK (spi_TxRx(ADDR(BRST_F|RW_F, CC2500_PKTSTATUS)) & _BV(7)) /*The last CRC comparison matched.
+typedef enum {
+  OK = 0x00,
+  TX,
+  RX,
+  ERROR,
+  CRC_ERROR,
+  FIFO_UNDERFWL,
+  FIFO_OVERFWL,
+  BUSY,
+  TIMEOUT
+  } cc2500_status_t;
+
+#define PKTSTATUS_CRC_OK (spi_TxRx(ADDR(BRST_F|CC_READ_F, CC2500_PKTSTATUS)) & _BV(7)) /*The last CRC comparison matched.
                                                                                   Cleared whenentering/restarting RX mode.
                                                                                   Only valid if PKTCTRL0.CC2400_EN=1.*/
 #define PKTSTATUS_CS (_BV(6))             //Carrier sense
@@ -43,7 +55,7 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 #define MARCSTATE_TX_END_STATE            0x14
 #define MARCSTATE_TXFIFOUNDFWL_STATE      0x16
 
-#define RXBYTES_N spi_TxRx(ADDR(BRST_F|RW_F, CC2500_RXBYTES)) //return bumber bytes in RX FIFO
+#define RXBYTES_N spi_TxRx(ADDR(BRST_F|CC_READ_F, CC2500_RXBYTES)) //return bumber bytes in RX FIFO
 
 // CC2500 STROBE, CONTROL AND STATUS REGISTER
 #define CC2500_IOCFG2       0x00        // GDO2 output pin configuration
@@ -140,11 +152,14 @@ status registers, burst bit is one, and command strobes, burst bit is zero
 
 
 void cc2500_reset(void);
-void InitCC2500(void);
 void command(uint8_t a); // give commands to CC
+uint8_t cc2500_get_status(uint8_t address);
+cc2500_status_t InitCC2500(const uint8_t settings[][2]); //const uint8_t* settings[2], const uint8_t settings[][2]
+cc2500_status_t cc2500_fifo_write(uint8_t *w_buf, const uint8_t nbytes);
+cc2500_status_t cc2500_fifo_read(uint8_t *r_buf, const uint8_t nbytes);
+
 void send();
 void receive();
-uint8_t cc2500_get_status(uint8_t address);
 
 
 #endif // CC2500_H_INCLUDED

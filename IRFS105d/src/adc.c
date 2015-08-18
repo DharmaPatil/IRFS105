@@ -14,20 +14,24 @@ along with Simple AVR Library. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include "inc/adc.h"
 
 void InitADC () {
-  ADMUX |= (_BV(REFS0) | _BV(REFS0) | _BV(ADLAR)); //internal REF, left adjust result
+  ADMUX |= (_BV(REFS1) | _BV(REFS0) | _BV(ADLAR)); //internal REF, left adjust result
   ADCSRA = (_BV(ADEN) | _BV(ADPS0) | _BV(ADPS1)); //division 8, freq = 125kHz
 }
 
 
 uint8_t read_ADC(uint8_t ch) {
-  ADMUX &= 0xE0; //clear channel
-  ADMUX |= _BV(ch);  //set channel
-
+  ADMUX = ((0x0F & ch) | (ADMUX & 0xF0)); //set channel
+  //ADMUX &= 0xF0; //clear channel
+  //ADMUX |= _BV(ch);  //set channel
+  _delay_us(10);
   ADCSRA |= (_BV(ADSC) | _BV(ADEN) ); //enable ADC(if disabled) and start single conversion
-  while ( bit_is_set(ADCSRA, ADSC) ); //wait end of conversion in blocking mode
+  //while ( bit_is_set(ADCSRA, ADSC) ); //wait end of conversion in blocking mode
+  while(bit_is_clear(ADCSRA, ADIF)); //wait end of conversion in blocking mode
+  ADCSRA |= _BV(ADIF);
   //ADCSRA |= (1 << ADIF);
   // перед уходом в спящий режим выключить АЦП, тут или в конечном автомате
   return (ADCH);

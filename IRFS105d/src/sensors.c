@@ -7,6 +7,7 @@
 ********************************************************/
 
 #include "inc/sensors.h"
+void led_count(uint8_t cnt);
 
 door_state_t ir_sensor(uint8_t threshold) {
   door_state_t state = undefined;
@@ -16,13 +17,7 @@ door_state_t ir_sensor(uint8_t threshold) {
   _delay_ms(PHOTODIODE_DELAY);
   //for (uint8_t i=0; i < DOOR_BASELINE_READINGS; i++) {
   baseline = read_ADC(SENSOR_DOOR_ADC);
-
-  for(uint8_t i = baseline; i>0; i--) {
-    PORTB |= _BV(PB3);
-    _delay_ms(1);
-    PORTB &= ~_BV(PB3);
-    _delay_ms(1);
-  }
+  led_count(baseline);//test code
   //}
 
   if(baseline > DOOR_SUN_LVL) {
@@ -36,12 +31,7 @@ door_state_t ir_sensor(uint8_t threshold) {
     IRLED_OFF;
     SENSOR_DOOR_VDD_OFF;
 
-    for(uint8_t i = active_level; i>0; i--) {
-      PORTB |= _BV(PB3);
-      _delay_ms(1);
-      PORTB &= ~_BV(PB3);
-      _delay_ms(1);
-    }
+    led_count(active_level);//test code
 
     if(active_level > (baseline + threshold)) {
       state = closed;
@@ -64,3 +54,11 @@ uint8_t get_vbat(void) {
   return 0;
 }
 
+void led_count(uint8_t cnt) {
+  for(uint8_t i = cnt; i>0; i--) {
+    PORTB |= _BV(PB3);
+    _delay_ms(1);
+    PORTB &= ~_BV(PB3);
+    _delay_ms(1);
+  }
+}

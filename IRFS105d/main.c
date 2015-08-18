@@ -24,6 +24,7 @@
 #include "inc/cc2500.h"
 #include "inc/lm75.h"
 #include "inc/adc.h"
+#include "inc/sensors.h"
 #include "inc/ct_assert.h"
 #include "inc/fsm_timers.h"
 #include "inc/fsm_messages.h"
@@ -157,10 +158,10 @@ inline void InitEXTI(void) {
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
   _delay_ms(900);
-  PORTB |= _BV(PB3);
+  //PORTB |= _BV(PB3);
   _delay_ms(100);
-  PORTB &= ~_BV(PB3);
-  CC_state=CC_TX;
+  //PORTB &= ~_BV(PB3);
+  CC_state=CC_CAL;
 }
 
 void ccTx(void) {
@@ -185,7 +186,14 @@ void ccRx(void) {
 }
 
 void ccCal(void) {
-  ;
+  if(ir_sensor(3) == open) {
+    PORTB |= _BV(PB3);
+  }
+  else {
+    PORTB &= ~_BV(PB3);
+  }
+
+  CC_state = CC_IDLE;
 }
 
 /* END FUNCTIONS*********************************************************************/

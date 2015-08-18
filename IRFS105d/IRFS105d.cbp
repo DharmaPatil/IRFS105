@@ -75,6 +75,7 @@
 		<Unit filename="inc/i2csoft.h" />
 		<Unit filename="inc/lm75.h" />
 		<Unit filename="inc/main.h" />
+		<Unit filename="inc/sensors.h" />
 		<Unit filename="inc/soft_spi.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
@@ -98,6 +99,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/lm75.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/sensors.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/soft_spi.c">

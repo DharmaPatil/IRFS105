@@ -3,7 +3,7 @@
 * @author Tejas Dhagawkar,
 *         aethylic@gmail.com
 * @date  09.08.15
-* @brief
+* @brief functions for work with IR LED sensors
 ********************************************************/
 
 /*

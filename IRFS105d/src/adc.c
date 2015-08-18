@@ -23,7 +23,7 @@ void InitADC () {
 
 
 uint8_t read_ADC(uint8_t ch) {
-  ADMUX &= ~_BV(ch); //clear channel
+  ADMUX &= 0xE0; //clear channel
   ADMUX |= _BV(ch);  //set channel
 
   ADCSRA |= (_BV(ADSC) | _BV(ADEN) ); //enable ADC(if disabled) and start single conversion

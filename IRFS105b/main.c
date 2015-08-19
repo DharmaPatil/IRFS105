@@ -19,6 +19,7 @@
 #include <util/crc16.h>
 
 #include "inc/main.h"
+#include "inc/uart.h"
 #include "inc/soft_spi.h"
 #include "inc/i2csoft.h"
 #include "inc/cc2500.h"
@@ -29,15 +30,18 @@
 
 /* TODO:
 UART rx 30, DE PD2, tx 31
-Установить мощность 0dBm в регистре PATABLE
-задержка 150 msek - max время конверсии STLM75 по паспорту
-Если изменилось на 1,0°C или более, то bizmen=1
-время сканирования инфракрасного датчика из EEPROM
-время сканирования фотодатчика вскрытия корпуса из EEPROM
-время опроса герконового датчика из EEPROM
-время опроса температуры из EEPROM
-время опроса напряжения питания из EEPROM
-время передачи пакета в случае отсутствия других пакетов для передачи из EEPROM
+	out	UBRRH,	h00	;\
+	ldi	Temp1,	11	;|Установить скорость по UART 19200 бод (11 при кварце 3.6864 МГц)
+	out	UBRRL,	Temp1	;/
+	ldi	Temp1,	0x98	;\ Разрешить прием по UART, передачу по UART, прерывание по приему байта по UART
+	out	UCSRB,	Temp1	;/
+	ldi	Temp1,	0x86	;\ Установить протокол по интерфейсу как "8-битные посылки с одним стоп битом без бита паритета"
+	out	UCSRC,	Temp1	;/
+Re2:	sbis	UCSRA,	RXC	;\
+	rjmp	Re3		;| Сбросить RXC (вроде как не обязательно)
+	in	Temp1,	UDR	;|
+	rjmp	Re2		;/
+Re3:	sbi	UCSRA,	TXC	; Обнулить TXC (на всякий случай)
 
 */
 
@@ -76,6 +80,7 @@ int main(void)
     InitTimers();
     InitMessages();
     InitCC2500(preferredSettings); //(const uint8_t **)conf(+6bytes of code), preferredSettings
+    uart0_init( UART_BAUD_SELECT(RS485_BAUDRATE, F_CPU) );
     //_delay_ms(5000);
     //InitEXTI();
     //MCUCR |= (_BV(ISC11) | _BV(ISC01));
@@ -89,7 +94,7 @@ int main(void)
     //wdt_enable(WDTO_2S);
     sei(); //enable interrupts
 
-    for (uint8_t i = 0; i<0x05; i++) {
+    for (uint8_t i = 0; i<0xFE; i++) {
           //_spi_start();
           //spi_TxRx(0x9D);
           //_spi_stop();
@@ -98,7 +103,13 @@ int main(void)
           _delay_ms(100);
           PORTC &= ~_BV(PC2);
           _delay_ms(100);
+
+          RS485_DE_HIGH;
+          uart0_putc(0xba);
+          _delay_ms(2);
+          RS485_DE_LOW;
         }
+        RS485_DE_LOW;
 
     while(1) {
       cc_table_state[CC_state]();
@@ -156,11 +167,12 @@ inline void InitGPIO(void) {
   DDRB |= (_BV(PB3) | _BV(PB7) | _BV(PB4));     // PB3 светодиод индикатор Out, PB7 STLM75 VDD, PB4 collector
   PORTB |= _BV(PB4);
 
-  DDRD &= ~(_BV(PD3) | _BV(PD4));    // PD3 send to therminal, PD4 привязка
-  DDRD |= _BV(PD0);                  // PD0 IR LED
-  PORTD |= (_BV(PD3) | _BV(PD4));    // pullup
+  DDRD &= ~(_BV(PD0) | _BV(PD3) | _BV(PD4));    // PD0 rxd, PD3 send to therminal, PD4 привязка
+  DDRD |= ( _BV(PD1) | _BV(PD2));    // PD1 txd, PD2 rs485 DE
+  PORTD &= ~(_BV(PD2));               //default state rs485 DE is LOW
+  PORTD |= (_BV(PD3) | _BV(PD4));    // buttons pullup
 
-  DDRD &= ~(_BV(PD1) | _BV(PD2) | _BV(PD3)); //PD1 INT calibrate, PD2 INT send, PD3 STLM75 INT input
+  DDRD &= ~(_BV(PD1) | _BV(PD3)); //PD1 INT calibrate, PD2 INT send, PD3 STLM75 INT input
   PORTD |= _BV(PD1) | _BV(PD2);    //interrups pin pull up
 }
 

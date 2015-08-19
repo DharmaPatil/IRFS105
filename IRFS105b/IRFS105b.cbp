@@ -75,6 +75,7 @@
 		<Unit filename="inc/i2csoft.h" />
 		<Unit filename="inc/main.h" />
 		<Unit filename="inc/soft_spi.h" />
+		<Unit filename="inc/uart.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -97,6 +98,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/soft_spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/uart.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

@@ -94,7 +94,7 @@ int main(void)
     //wdt_enable(WDTO_2S);
     sei(); //enable interrupts
 
-    for (uint8_t i = 0; i<0xFE; i++) {
+    for (uint8_t i = 0; i<0x05; i++) {
           //_spi_start();
           //spi_TxRx(0x9D);
           //_spi_stop();
@@ -216,21 +216,28 @@ void ccRx(void) {
   command(SIDLE); // turn CC2500 into idle mode
   command(SFRX); // flush receiver FIFO in IDDLE mode
 
+  RS485_DE_HIGH;
+  for(uint8_t i=0; i<=7; i++) {
+    uart0_putc(receiver_buf[i]);
+  }
+  //uart0_puts((const char *)receiver_buf);
+  _delay_ms(10);
+  RS485_DE_LOW;
     //test LED ON if packet received and data correct
-  if (receiver_buf[0] == 0x6A) {
-    PORTC |= _BV(PC3);
-    _delay_ms(200);
-  }
-  if (receiver_buf[1] == 0x6A) {
-    PORTC |= _BV(PC4);
-    _delay_ms(200);
-  }
-  if (receiver_buf[2] == 0x6A) {
-    PORTC |= _BV(PC5);
-    _delay_ms(200);
-  }
-  PORTC &= ~( _BV(PC3) | _BV(PC4) | _BV(PC5) );//LED OFF
-  _delay_ms(100);
+//  if (receiver_buf[0] == 0x6A) {
+//    PORTC |= _BV(PC3);
+//    _delay_ms(200);
+//  }
+//  if (receiver_buf[1] == 0x6A) {
+//    PORTC |= _BV(PC4);
+//    _delay_ms(200);
+//  }
+//  if (receiver_buf[2] == 0x6A) {
+//    PORTC |= _BV(PC5);
+//    _delay_ms(200);
+//  }
+//  PORTC &= ~( _BV(PC3) | _BV(PC4) | _BV(PC5) );//LED OFF
+//  _delay_ms(100);
 
   //receive();
   //send();

@@ -48,6 +48,7 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
 extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
+uint8_t data[7] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xfa};
 /* END Global variables **********************************************************/
 
 /*Function prototypes ************************************************************/
@@ -161,16 +162,16 @@ inline void InitEXTI(void) {
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
   _delay_ms(900);
-  //PORTB |= _BV(PB3);
+  PORTB |= _BV(PB3);
   _delay_ms(100);
-  //PORTB &= ~_BV(PB3);
-  CC_state=CC_CAL;
+  PORTB &= ~_BV(PB3);
+  CC_state=CC_TX;
 }
 
 void ccTx(void) {
   command(SIDLE);    //turn CC2500 into idle mode
   command(SFTX);      //flush tx FIFO
-  uint8_t data[7] = {0x6A, 0x6A, 0x6A, 0x6A, 0x6A, 0x6A, 0x6A};
+
   cc2500_fifo_write(data, 7);
   command(STX);  //command to send data in tx FIFO wirelessly
   //ждать пока не закончится передача пакета и трансивер не вернется в состояние IDLE
@@ -189,14 +190,16 @@ void ccRx(void) {
 }
 
 void ccCal(void) {
-  if(ir_sensor(3) == open) {
-    PORTB |= _BV(PB3);
-  }
-  else {
-    PORTB &= ~_BV(PB3);
-  }
+//  if(ir_sensor(3) == open) {
+//    PORTB |= _BV(PB3);
+//  }
+//  else {
+//    PORTB &= ~_BV(PB3);
+//  }
 
-  CC_state = CC_IDLE;
+  //data[1] = (uint8_t)get_temp();
+
+  CC_state = CC_TX;
 }
 
 /* END FUNCTIONS*********************************************************************/

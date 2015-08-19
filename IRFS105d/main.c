@@ -19,11 +19,11 @@
 #include <util/crc16.h>
 
 #include "inc/main.h"
-#include "inc/soft_spi.h"
-#include "inc/i2csoft.h"
+//#include "inc/soft_spi.h"
+//#include "inc/i2csoft.h"
 #include "inc/cc2500.h"
-#include "inc/lm75.h"
-#include "inc/adc.h"
+//#include "inc/lm75.h"
+//#include "inc/adc.h"
 #include "inc/sensors.h"
 #include "inc/ct_assert.h"
 #include "inc/fsm_timers.h"
@@ -136,19 +136,22 @@ inline void InitSystemTimer(void) {
 }
 
 inline void InitGPIO(void) {
-  DDRC &= ~_BV(PC2);   // PC2 Геркон Input
-  DDRC |= _BV(PC5);    // PC5 IR Photodiode Out
-  PORTC |= _BV(PC2);   // PC2 Геркон Pull Up
-                       // PC1 power???
+  DDRC &= ~(_BV(PC2));   // PC2 Геркон Input
+  DDRC |= (_BV(PC5) | _BV(PC1));    // PC5 IR Photodiode Out PC1 power divider
+  PORTC &= ~(_BV(PC1));
+  PORTC |= (_BV(PC2));   // PC2 Геркон Pull Up
 
-  DDRB |= (_BV(PB3) | _BV(PB7));     // PB3 светодиод индикатор Out, PB7 STLM75 VDD
-        // PB5 emitter phototransistor
+
+  DDRB &= ~(_BV(PB5)); // PB5 emitter phototransistor
+  DDRB |= (_BV(PB3) | _BV(PB7) | _BV(PB4));     // PB3 светодиод индикатор Out, PB7 STLM75 VDD, PB4 Case VDD
+  PORTB &= ~(_BV(PB4) | _BV(PB5) | _BV(PB7)); // Case VDD OFF, pullup OFF, STLM75 VDD OFF
+
         // PB4 collector phototransistor
 
-  DDRD |= _BV(PD0);                  // PD0 IR LED
+  DDRD |= (_BV(PD0));                  // PD0 IR LED
 
   DDRD &= ~(_BV(PD1) | _BV(PD2) | _BV(PD3)); //PD1 INT calibrate, PD2 INT send, PD3 STLM75 INT input
-  PORTD |= _BV(PD1) | _BV(PD2);    //interrups pin pull up
+  PORTD |= (_BV(PD1) | _BV(PD2));    //interrups pin pull up
 }
 
 inline void InitEXTI(void) {

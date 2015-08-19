@@ -15,10 +15,7 @@ door_state_t ir_sensor(uint8_t threshold) {
 
   SENSOR_DOOR_VDD_ON;
   _delay_ms(PHOTODIODE_DELAY);
-  //for (uint8_t i=0; i < DOOR_BASELINE_READINGS; i++) {
-  baseline = read_ADC(SENSOR_DOOR_ADC);
-  led_count(baseline);//test code
-  //}
+  baseline = read_ADC(SENSOR_DOOR_CHAN);
 
   if(baseline > DOOR_SUN_LVL) {
     SENSOR_DOOR_VDD_OFF;
@@ -26,12 +23,9 @@ door_state_t ir_sensor(uint8_t threshold) {
   }
   else {
     IRLED_ON;
-    _delay_ms(10);
-    active_level = read_ADC(SENSOR_DOOR_ADC);
+    active_level = read_ADC(SENSOR_DOOR_CHAN);
     IRLED_OFF;
     SENSOR_DOOR_VDD_OFF;
-
-    led_count(active_level);//test code
 
     if(active_level > (baseline + threshold)) {
       state = closed;
@@ -46,14 +40,37 @@ door_state_t ir_sensor(uint8_t threshold) {
 
 
 case_state_t check_intrusion(void) {
-  return closed;
+  case_state_t state = closed;
+
+  CASE_SENS_VDD_ON;
+  if(CASE_SENS_STATE) {
+    state = open;
+  }
+  CASE_SENS_VDD_OFF;
+
+  return state;
 }
 
 uint8_t get_vbat(void) {
+  uint8_t voltage;
 
-  return 0;
+  VBAT_DIVIDER_ON;
+  voltage = read_ADC(VBAT_CHAN);
+  VBAT_DIVIDER_OFF;
+  // 20,078 mV/bit
+  return voltage;
 }
 
+int16_t get_temp(void) {
+  int16_t temp=0xFE; //init temperature +254C
+  LM75_VDD_ON;
+  temp = LM75_TempRead(LM75_ADDR);
+  LM75_VDD_OFF;
+
+  return temp;
+}
+
+#ifndef NDEBUG
 void led_count(uint8_t cnt) {
   for(uint8_t i = cnt; i>0; i--) {
     PORTB |= _BV(PB3);
@@ -62,3 +79,6 @@ void led_count(uint8_t cnt) {
     _delay_ms(1);
   }
 }
+#endif // NDEBUG
+
+

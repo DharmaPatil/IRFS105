@@ -33,6 +33,7 @@ B4700 D0    A7
 D4713 D0    B8
 D4702 D0    7D
 D4714 CF    A2
+D4715 3E    0D
 D4716 D0    C5
 */
 
@@ -40,9 +41,9 @@ const uint8_t preferredSettings[][2]=
 {
   {CC2500_FSCTRL1,      0x06},
   {CC2500_FSCTRL0,      0x00},
-  {CC2500_FREQ2,        0x59},
-  {CC2500_FREQ1,        0xD0}, //b4715 CF
-  {CC2500_FREQ0,        0xC5}, //  89
+  {CC2500_FREQ2,        0x5B},
+  {CC2500_FREQ1,        0x3E}, //b4715 CF
+  {CC2500_FREQ0,        0x0D}, //  89
   {CC2500_MDMCFG4,      0x5B},
   {CC2500_MDMCFG3,      0xE5},
   {CC2500_MDMCFG2,      0x73},

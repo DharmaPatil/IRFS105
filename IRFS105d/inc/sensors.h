@@ -41,7 +41,7 @@ typedef enum {case_closed, case_open} case_state_t;
 door_state_t ir_sensor(uint8_t threshold);
 case_state_t check_intrusion(void);
 uint8_t get_vbat(void);
-int16_t get_temp(void);
+int8_t get_temp(void);
 
 
 #endif // SENSORS_H_INCLUDED

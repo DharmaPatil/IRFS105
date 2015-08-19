@@ -61,10 +61,10 @@ uint8_t get_vbat(void) {
   return voltage;
 }
 
-int16_t get_temp(void) {
-  int16_t temp=0xFE; //init temperature +254C
+int8_t get_temp(void) {
+  int8_t temp = 127; //init temperature +127C. If this temp return -> LM75 not work
   LM75_VDD_ON;
-  temp = LM75_TempRead(LM75_ADDR);
+  temp = (int8_t)(LM75_TempRead(LM75_ADDR)>>1);
   LM75_VDD_OFF;
 
   return temp;

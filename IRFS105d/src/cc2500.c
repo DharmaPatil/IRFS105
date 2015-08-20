@@ -16,7 +16,7 @@ static const uint8_t pa_table[8] = PA_TABLE;
 uint8_t p,q,r,t; //deleete!
 
 
-cc2500_status_t InitCC2500(const uint8_t settings[][2]) { //const uint8_t* settings[2], const uint8_t settings[][2]
+cc2500_status_t InitCC2500(uint8_t settings[][2]) { //const uint8_t* settings[2], const uint8_t settings[][2]
   cc2500_status_t status = OK;
 
   cc2500_reset();

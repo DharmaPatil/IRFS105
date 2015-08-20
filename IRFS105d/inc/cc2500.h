@@ -154,7 +154,7 @@ typedef enum {
 void cc2500_reset(void);
 void command(uint8_t a); // give commands to CC
 uint8_t cc2500_get_status(uint8_t address);
-cc2500_status_t InitCC2500(const uint8_t settings[][2]); //const uint8_t* settings[2], const uint8_t settings[][2]
+cc2500_status_t InitCC2500(uint8_t settings[][2]); //const uint8_t* settings[2], const uint8_t settings[][2]
 cc2500_status_t cc2500_fifo_write(uint8_t *w_buf, const uint8_t nbytes);
 cc2500_status_t cc2500_fifo_read(uint8_t *r_buf, const uint8_t nbytes);
 

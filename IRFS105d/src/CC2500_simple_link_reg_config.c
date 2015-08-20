@@ -37,7 +37,7 @@ D4715 3E    0D
 D4716 D0    C5
 */
 
-const uint8_t preferredSettings[][2]=
+uint8_t ram_cc_Settings[][2]=
 {
   {CC2500_FSCTRL1,      0x06},
   {CC2500_FSCTRL0,      0x00},
@@ -78,4 +78,4 @@ const uint8_t preferredSettings[][2]=
   {CC2500_FIFOTHR,      0x15},
 };
 
-STATIC_ASSERT( sizeof(preferredSettings)/2 == 37 ); // define CC_N_REG
+STATIC_ASSERT( sizeof(ram_cc_Settings)/2 == 37 ); // define CC_N_REG

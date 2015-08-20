@@ -47,8 +47,9 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
-extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
-Settings_t EEMEM rw_settings =
+extern uint8_t ram_cc_Settings[][2]; //можно считывать с флешки или еепром
+
+Settings_t EEMEM saved_settings =
 {
   {5,5,5,20,5,250},  //timers
   3,1,            //thresholds
@@ -58,8 +59,13 @@ Settings_t EEMEM rw_settings =
     {CC2500_FREQ2,        0x5B},
     {CC2500_FREQ1,        0x3E},
     {CC2500_FREQ0,        0x0D}
-  }
+  },
+  0,    //wdt cnt
+  1,    //write cnt
+  0x0   //crc
 };
+
+
 
 uint8_t data[7] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xfa};
 /* END Global variables **********************************************************/
@@ -82,7 +88,13 @@ CC_State_t CC_state = CC_IDLE;
 
 int main(void)
 {
+    Settings_t global_settings;
+
     //STATIC_ASSERT(sizeof(uint16_t) == 2);
+    //copy stored settings to RAM
+    eeprom_read_block((void *)&global_settings, (const void *)&saved_settings, sizeof(Settings_t) );
+    cc_conf_replace((uint8_t **)ram_cc_Settings, &global_settings);
+
     InitGPIO();
     InitSPI_soft();
     InitI2C_soft();
@@ -90,7 +102,8 @@ int main(void)
     InitSystemTimer();
     InitTimers();
     InitMessages();
-    InitCC2500(preferredSettings); //(const uint8_t **)conf(+6bytes of code), preferredSettings
+
+    InitCC2500(ram_cc_Settings); //(const uint8_t **)conf(+6bytes of code), preferredSettings
     InitEXTI();
     //MCUCR |= (_BV(ISC11) | _BV(ISC01));
 
@@ -170,6 +183,18 @@ inline void InitGPIO(void) {
 
 inline void InitEXTI(void) {
   MCUCR |= (_BV(ISC11) | _BV(ISC01)); // enable extarnal interrupts on falling edge
+}
+
+/*search and replace register of cc2500 conf*/
+void cc_conf_replace(uint8_t* cc_init_conf[2] , Settings_t* patch) {
+  for(uint8_t i = 0; i<=CC2500_REPLACED_REG; i++) {
+    for(uint8_t j = 0; j<=CC_N_REG; j++) {
+      if( cc_init_conf[j][0] == patch->cc2500_rw_settings[i][0]) {
+        cc_init_conf[j][1] = patch->cc2500_rw_settings[i][0];
+        break;
+      }
+    }
+  }
 }
 
 /* FSM functions *******************************************************************/

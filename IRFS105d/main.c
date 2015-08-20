@@ -48,6 +48,19 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
 extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
+Settings_t EEMEM rw_settings =
+{
+  {5,5,5,20,5,250},  //timers
+  3,1,            //thresholds
+  {
+    {CC2500_ADDR,         0x00},
+    {CC2500_CHANNR,       0x00},
+    {CC2500_FREQ2,        0x5B},
+    {CC2500_FREQ1,        0x3E},
+    {CC2500_FREQ0,        0x0D}
+  }
+};
+
 uint8_t data[7] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xfa};
 /* END Global variables **********************************************************/
 

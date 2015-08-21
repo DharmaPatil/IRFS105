@@ -28,6 +28,9 @@ typedef struct __Timers_t {
 #define ASYNC_TIMER //use 32768Hz xtal
 
 #define _NOP() do { __asm__ __volatile__ ("nop"); } while (0)
+#define SEMAPHORE_GET(x) if(x) x--
+#define SEMAPHORE_GIVE(x) (if((x)<254) (x)++)
+
 /*
 cc2500_rw_settings[5][2] =
 {

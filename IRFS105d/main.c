@@ -47,7 +47,7 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
-uint8_t smphr_sleep = 0; //sleep semaphore
+uint8_t smphr_sleep = 8; //sleep semaphore
 extern uint8_t ram_cc_Settings[][2]; //можно считывать с флешки или еепром
 
 Settings_t EEMEM saved_settings =
@@ -100,7 +100,7 @@ int main(void)
     InitSPI_soft();
     InitI2C_soft();
     InitADC();
-    _delay_ms(2000);//wait before enable async timer2
+    //_delay_ms(2000);//wait before enable async timer2
     InitSystemTimer();
     InitTimers();
     InitMessages();
@@ -117,13 +117,13 @@ int main(void)
     set_sleep_mode(SLEEP_MODE_PWR_SAVE); //варианты SLEEP_MODE_PWR_SAVE SLEEP_MODE_IDLE SLEEP_MODE_ADC
     //wdt_enable(WDTO_2S);
     sei(); //enable interrupts
-    smphr_sleep++;
+    smphr_sleep=8;
+
+    #ifndef NDEBUG
+    PORTB |= _BV(PB3);
+    #endif // NDEBUG
 
     while(1) {
-      #ifndef NDEBUG
-      //PORTB |= _BV(PB3);
-      _delay_ms(50);
-      #endif // NDEBUG
       cc_table_state[CC_state]();
 
       ProcessTimers(&sys_timer);
@@ -132,15 +132,19 @@ int main(void)
 
       /*enter in sleep mode if sleep semaphore is null, until interrupts occured*/
       cli(); //disable interrupts
-      if (!smphr_sleep)
-      {
+      if (!smphr_sleep) {
         #ifndef NDEBUG
         PORTB &= ~_BV(PB3);
         #endif // NDEBUG
+        OCR2 = 0; //write any value. See Atmega8A datasheet, 110 pp
+        while(bit_is_set(ASSR, OCR2UB));//wait
         sleep_enable();
         sei();
         sleep_cpu();
         sleep_disable();
+        #ifndef NDEBUG
+        PORTB |= _BV(PB3);
+        #endif // NDEBUG
       }
       sei();
     }
@@ -153,10 +157,10 @@ ISR(TIMER2_OVF_vect) {
 
 	sys_timer++;
 	#ifndef NDEBUG
-  PORTB |= _BV(PB3);
-  _delay_ms(20);
-  PORTB &= ~_BV(PB3);
-  _delay_ms(20);
+//  PORTB |= _BV(PB3);
+//  _delay_ms(20);
+//  PORTB &= ~_BV(PB3);
+//  _delay_ms(20);
   #endif // NDEBUG
 
 #ifndef ASYNC_TIMER
@@ -186,17 +190,7 @@ inline void InitSystemTimer(void) {
   //set prescaller 128
   TCCR2 |= (_BV(CS22) | _BV(CS20) );
   //wait for registers update
-  while (ASSR & _BV(TCR2UB)) { //while (ASSR & (_BV(TCN2UB) | _BV(TCR2UB)));
-      	#ifndef NDEBUG
-        PORTB |= _BV(PB3);//blink
-        _NOP();
-        PORTB &= ~_BV(PB3);
-        _NOP();
-        _NOP();
-        //_NOP();
-        //_NOP();
-        #endif // NDEBUG
-  }
+  while (ASSR & _BV(TCR2UB)); //while (ASSR & (_BV(TCN2UB) | _BV(TCR2UB)));
   //clear interrupt flags
   TIFR  = _BV(TOV2);
   //enable TOV2 interrupt
@@ -249,6 +243,11 @@ void ccIdle(void) {
   //PORTB |= _BV(PB3);
   _delay_ms(100);
   //PORTB &= ~_BV(PB3);
+  if(smphr_sleep>0) {
+    smphr_sleep--;
+  }
+  //SEMAPHORE_GET(smphr_sleep);
+
   CC_state=CC_TX;
 }
 

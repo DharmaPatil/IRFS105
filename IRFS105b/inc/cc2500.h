@@ -57,6 +57,8 @@ typedef enum {
 
 #define RXBYTES_N spi_TxRx(ADDR(BRST_F|CC_READ_F, CC2500_RXBYTES)) //return bumber bytes in RX FIFO
 
+#define RSSI_OFFSET  0x46 //100 kBaud
+
 // CC2500 STROBE, CONTROL AND STATUS REGISTER
 #define CC2500_IOCFG2       0x00        // GDO2 output pin configuration
 #define CC2500_IOCFG1       0x01        // GDO1 output pin configuration
@@ -154,9 +156,11 @@ typedef enum {
 void cc2500_reset(void);
 void command(uint8_t a); // give commands to CC
 uint8_t cc2500_get_status(uint8_t address);
+uint8_t cc2500_get_rssi(void);
 cc2500_status_t InitCC2500(const uint8_t settings[][2]); //const uint8_t* settings[2], const uint8_t settings[][2]
 cc2500_status_t cc2500_fifo_write(uint8_t *w_buf, const uint8_t nbytes);
 cc2500_status_t cc2500_fifo_read(uint8_t *r_buf, const uint8_t nbytes);
+uint16_t cc2500_change_freq(uint16_t new_freq);
 
 //void send();
 //void receive();

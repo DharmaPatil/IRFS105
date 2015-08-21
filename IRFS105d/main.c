@@ -47,8 +47,9 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
-uint8_t smphr_sleep = 8; //sleep semaphore
+static uint8_t smphr_sleep = 1; //sleep semaphore
 extern uint8_t ram_cc_Settings[][2]; //можно считывать с флешки или еепром
+Settings_t global_settings;
 
 Settings_t EEMEM saved_settings =
 {
@@ -58,8 +59,8 @@ Settings_t EEMEM saved_settings =
     {CC2500_ADDR,         0x00},
     {CC2500_CHANNR,       0x00},
     {CC2500_FREQ2,        0x5B},
-    {CC2500_FREQ1,        0x3E},
-    {CC2500_FREQ0,        0x0D}
+    {CC2500_FREQ1,        0x51},
+    {CC2500_FREQ0,        0x04}
   },
   0,    //wdt cnt
   1,    //write cnt
@@ -89,12 +90,11 @@ CC_State_t CC_state = CC_IDLE;
 
 int main(void)
 {
-    Settings_t global_settings;
 
     //STATIC_ASSERT(sizeof(uint16_t) == 2);
     //copy stored settings to RAM
-    eeprom_read_block((void *)&global_settings, (const void *)&saved_settings, sizeof(Settings_t) );
-    cc_conf_replace((uint8_t **)ram_cc_Settings, &global_settings);
+    //eeprom_read_block((void *)&global_settings, (const void *)&saved_settings, sizeof(Settings_t) );
+    //cc_conf_replace((uint8_t **)ram_cc_Settings, &global_settings);
 
     InitGPIO();
     InitSPI_soft();
@@ -120,7 +120,7 @@ int main(void)
     smphr_sleep=8;
 
     #ifndef NDEBUG
-    PORTB |= _BV(PB3);
+    //PORTB |= _BV(PB3);
     #endif // NDEBUG
 
     while(1) {
@@ -130,11 +130,11 @@ int main(void)
       ProcessMessages();
       wdt_reset();
 
-      /*enter in sleep mode if sleep semaphore is null, until interrupts occured*/
+      /*enter in sleep mode if sleep semaphore is null, wakeup async timer2 overflow*/
       cli(); //disable interrupts
       if (!smphr_sleep) {
         #ifndef NDEBUG
-        PORTB &= ~_BV(PB3);
+        //PORTB &= ~_BV(PB3);
         #endif // NDEBUG
         OCR2 = 0; //write any value. See Atmega8A datasheet, 110 pp
         while(bit_is_set(ASSR, OCR2UB));//wait
@@ -143,7 +143,7 @@ int main(void)
         sleep_cpu();
         sleep_disable();
         #ifndef NDEBUG
-        PORTB |= _BV(PB3);
+        //PORTB |= _BV(PB3);
         #endif // NDEBUG
       }
       sei();
@@ -157,10 +157,10 @@ ISR(TIMER2_OVF_vect) {
 
 	sys_timer++;
 	#ifndef NDEBUG
-//  PORTB |= _BV(PB3);
-//  _delay_ms(20);
-//  PORTB &= ~_BV(PB3);
-//  _delay_ms(20);
+  PORTB |= _BV(PB3);
+  _delay_ms(10);
+  PORTB &= ~_BV(PB3);
+  _delay_ms(10);
   #endif // NDEBUG
 
 #ifndef ASYNC_TIMER
@@ -240,12 +240,12 @@ void cc_conf_replace(uint8_t* cc_init_conf[2] , Settings_t* patch) {
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
   _delay_ms(700);
-  //PORTB |= _BV(PB3);
+  PORTB |= _BV(PB3);
   _delay_ms(100);
-  //PORTB &= ~_BV(PB3);
-  if(smphr_sleep>0) {
-    smphr_sleep--;
-  }
+  PORTB &= ~_BV(PB3);
+  //if(smphr_sleep>0) {
+    //smphr_sleep--;
+  //}
   //SEMAPHORE_GET(smphr_sleep);
 
   CC_state=CC_TX;

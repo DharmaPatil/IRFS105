@@ -51,6 +51,8 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
 extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
+static uint16_t freq;
+static uint16_t rssi_acc;
 /* END Global variables **********************************************************/
 
 /*Function prototypes ************************************************************/
@@ -184,7 +186,22 @@ inline void InitGPIO(void) {
 void ccIdle(void) {
   //_delay_ms(1000);
   PORTC |= _BV(PC2); //blink for test
-  _delay_ms(300);
+  _delay_ms(30);
+
+  static uint8_t old_rssi;
+  static uint8_t cnt=0;
+
+  if(cnt++ < 8){
+    rssi_acc += cc2500_get_status(CC2500_RSSI);
+  }
+  else {
+    cnt = 0;
+
+  }
+
+
+
+
   CC_state=CC_RX;
 }
 
@@ -195,7 +212,7 @@ void ccTx(void) {
 
 void ccRx(void) {
   PORTC &= ~_BV(PC2);
-  _delay_ms(100);
+  _delay_ms(20);
 
   uint8_t receiver_buf[7];
 
@@ -215,9 +232,11 @@ void ccRx(void) {
   command(SFRX); // flush receiver FIFO if owerflow state
   command(SIDLE); // turn CC2500 into idle mode
   command(SFRX); // flush receiver FIFO in IDDLE mode
-
+  receiver_buf[3] =
+  receiver_buf[4] = cc2500_get_status(CC2500_RSSI);
+  receiver_buf[5] = cc2500_get_rssi();
   RS485_DE_HIGH;
-  for(uint8_t i=0; i<=7; i++) {
+  for(uint8_t i=0; i<7; i++) {
     uart0_putc(receiver_buf[i]);
   }
   //uart0_puts((const char *)receiver_buf);

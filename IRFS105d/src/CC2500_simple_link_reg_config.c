@@ -25,25 +25,27 @@
 #include <inc/cc2500.h>
 #include "inc/ct_assert.h"
 
-/*    freq1 freq0
-b4712 CF    B0
-b4714 CF    89
-b4715 CF    71
-B4700 D0    A7
-D4713 D0    B8
-D4702 D0    7D
-D4714 CF    A2
-D4715 3E    0D
-D4716 D0    C5
+/*    freq2 freq1 freq0
+b4712       CF    B0
+b4714  5B   3Ñ    85  //CF    89
+b4715       CF    71
+B4700       D0    A7
+
+D4713       D0    B8
+D4702       D0    7D
+D4714       CF    A2
+D4715  5B   3E    0D
+D4716  5B   3D    CF
+
 */
 
 uint8_t ram_cc_Settings[][2]=
 {
   {CC2500_FSCTRL1,      0x06},
   {CC2500_FSCTRL0,      0x00},
-  {CC2500_FREQ2,        0x5B},
-  {CC2500_FREQ1,        0x3E}, //b4715 CF
-  {CC2500_FREQ0,        0x0D}, //  89
+  {CC2500_FREQ2,        0x5B}, //
+  {CC2500_FREQ1,        0x51}, //D4716
+  {CC2500_FREQ0,        0x04}, //
   {CC2500_MDMCFG4,      0x5B},
   {CC2500_MDMCFG3,      0xE5},
   {CC2500_MDMCFG2,      0x73},

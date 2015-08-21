@@ -16,6 +16,8 @@ static const uint8_t pa_table[8] = PA_TABLE;
 uint8_t p,q,r,t; //deleete!
 
 
+
+
 cc2500_status_t InitCC2500(const uint8_t settings[][2]) { //const uint8_t* settings[2], const uint8_t settings[][2]
   cc2500_status_t status = OK;
 
@@ -122,6 +124,44 @@ uint8_t cc2500_get_status(uint8_t address) {
   uint8_t status = spi_TxRx(0xFF);
   _spi_stop();
   return status;
+}
+
+uint8_t cc2500_get_rssi(void) {
+  uint16_t raw_rssi;
+  uint8_t rssi;
+
+  raw_rssi = cc2500_get_status(CC2500_RSSI);
+  if(raw_rssi >= 0x80) {
+    rssi = (uint8_t)(raw_rssi - 0x100)/2;// - RSSI_OFFSET;
+  }
+  else {
+    rssi = (uint8_t)(raw_rssi)/2;// - RSSI_OFFSET;
+  }
+  return rssi;
+}
+
+uint16_t cc2500_change_freq(uint16_t new_freq) {
+  uint8_t old_freq[2];
+
+  if ((MASK_MARCSTATE(cc2500_get_status(CC2500_MARCSTATE)) != MARCSTATE_IDLE_STATE)) {
+    return 0;
+  }
+
+  _spi_start();
+  while(MISO_STATE);
+  spi_TxRx(ADDR(BRST_F|CC_READ_F, CC2500_FREQ1));
+  old_freq[1] = spi_TxRx(0xFF);
+  old_freq[0] = spi_TxRx(0xFF);
+  _spi_stop();
+
+  _spi_start();
+  while(MISO_STATE);
+  spi_TxRx(ADDR(BRST_F|CC_READ_F, CC2500_FREQ1));
+  spi_TxRx((uint8_t)((new_freq&0xFF00)>>8));
+  spi_TxRx((uint8_t)(new_freq&0xFF));
+  _spi_stop();
+
+  return *(uint16_t *)old_freq;
 }
 
 ////receive data wirelessly with CC

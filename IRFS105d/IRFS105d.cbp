@@ -27,7 +27,6 @@
 					<Add option="-std=c99" />
 					<Add option="-ffunction-sections" />
 					<Add option="-fdata-sections" />
-					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

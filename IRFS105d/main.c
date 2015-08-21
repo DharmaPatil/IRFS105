@@ -47,6 +47,7 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
+uint8_t smphr_sleep = 0; //sleep semaphore
 extern uint8_t ram_cc_Settings[][2]; //можно считывать с флешки или еепром
 
 Settings_t EEMEM saved_settings =
@@ -99,6 +100,7 @@ int main(void)
     InitSPI_soft();
     InitI2C_soft();
     InitADC();
+    _delay_ms(2000);//wait before enable async timer2
     InitSystemTimer();
     InitTimers();
     InitMessages();
@@ -112,28 +114,35 @@ int main(void)
       //increase wathcdog reset counter and save in eeprom
     }
 
-    set_sleep_mode(SLEEP_MODE_IDLE); //варианты SLEEP_MODE_PWR_SAVE SLEEP_MODE_IDLE SLEEP_MODE_ADC
+    set_sleep_mode(SLEEP_MODE_PWR_SAVE); //варианты SLEEP_MODE_PWR_SAVE SLEEP_MODE_IDLE SLEEP_MODE_ADC
     //wdt_enable(WDTO_2S);
     sei(); //enable interrupts
+    smphr_sleep++;
 
     while(1) {
+      #ifndef NDEBUG
+      //PORTB |= _BV(PB3);
+      _delay_ms(50);
+      #endif // NDEBUG
       cc_table_state[CC_state]();
-
 
       ProcessTimers(&sys_timer);
       ProcessMessages();
       wdt_reset();
 
-      /*enter in sleep mode until interrupts occured*/
-//      cli(); //disable interrupts
-//      if (some_condition)
-//      {
-//        sleep_enable();
-//        sei();
-//        sleep_cpu();
-//        sleep_disable();
-//      }
-//      sei();
+      /*enter in sleep mode if sleep semaphore is null, until interrupts occured*/
+      cli(); //disable interrupts
+      if (!smphr_sleep)
+      {
+        #ifndef NDEBUG
+        PORTB &= ~_BV(PB3);
+        #endif // NDEBUG
+        sleep_enable();
+        sei();
+        sleep_cpu();
+        sleep_disable();
+      }
+      sei();
     }
 
     return 0;
@@ -141,8 +150,18 @@ int main(void)
 
 /* INTERRUPT HANDLERS *************************************************************/
 ISR(TIMER2_OVF_vect) {
+
 	sys_timer++;
+	#ifndef NDEBUG
+  PORTB |= _BV(PB3);
+  _delay_ms(20);
+  PORTB &= ~_BV(PB3);
+  _delay_ms(20);
+  #endif // NDEBUG
+
+#ifndef ASYNC_TIMER
 	TCNT2 = TIMER2_PRELOAD;
+#endif // ASYNC_TIMER
 }
 
 ISR(INT0_vect) { //По низкому уровню на ножке INT0 (кнопка Send)
@@ -156,10 +175,37 @@ ISR(INT1_vect) { //По низкому уровню на ножке INT1 (кнопка Калибровка)
 
 /* FUNCTIONS **********************************************************************/
 inline void InitSystemTimer(void) {
-  // Init Timer0
+  // Init Timer2
+#ifdef ASYNC_TIMER
+  //Disable timer2 interrupts
+  TIMSK  = 0;
+  //Enable asynchronous mode
+  ASSR  = _BV(AS2);
+  //set initial counter value
+  //TCNT2=0;
+  //set prescaller 128
+  TCCR2 |= (_BV(CS22) | _BV(CS20) );
+  //wait for registers update
+  while (ASSR & _BV(TCR2UB)) { //while (ASSR & (_BV(TCN2UB) | _BV(TCR2UB)));
+      	#ifndef NDEBUG
+        PORTB |= _BV(PB3);//blink
+        _NOP();
+        PORTB &= ~_BV(PB3);
+        _NOP();
+        _NOP();
+        //_NOP();
+        //_NOP();
+        #endif // NDEBUG
+  }
+  //clear interrupt flags
+  TIFR  = _BV(TOV2);
+  //enable TOV2 interrupt
+  TIMSK  = _BV(TOIE2);
+#else
 	TCCR2 = _BV(CS22);	// Set prescaler 64 -> F = 1MHz/64/156 = 100Hz (10ms) system timer. 32768Hz Xtal not used
-	TCNT2 = TIMER2_PRELOAD;				// Preload TCNT0 value to get 125 division coefficient
-	TIMSK |= _BV(TOIE2); 					// Enable Timer2 overflow interrupt
+	TCNT2 = TIMER2_PRELOAD;	// Preload TCNT0 value to get 125 division coefficient
+	TIMSK |= _BV(TOIE2); 		// Enable Timer2 overflow interrupt
+#endif // ASYNC_TIMER
 }
 
 inline void InitGPIO(void) {
@@ -199,10 +245,10 @@ void cc_conf_replace(uint8_t* cc_init_conf[2] , Settings_t* patch) {
 
 /* FSM functions *******************************************************************/
 void ccIdle(void) {
-  _delay_ms(900);
-  PORTB |= _BV(PB3);
+  _delay_ms(700);
+  //PORTB |= _BV(PB3);
   _delay_ms(100);
-  PORTB &= ~_BV(PB3);
+  //PORTB &= ~_BV(PB3);
   CC_state=CC_TX;
 }
 

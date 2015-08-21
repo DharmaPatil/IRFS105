@@ -25,6 +25,9 @@ typedef struct __Timers_t {
 }Timers_t;
 
 #define CC2500_REPLACED_REG 5
+#define ASYNC_TIMER //use 32768Hz xtal
+
+#define _NOP() do { __asm__ __volatile__ ("nop"); } while (0)
 /*
 cc2500_rw_settings[5][2] =
 {

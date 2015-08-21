@@ -2,5 +2,5 @@
 
 FUSES = {
     .low = 0xE1,
-    .high = 0xDF
+    .high = 0xCF
 };

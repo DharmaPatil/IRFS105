@@ -12,7 +12,12 @@
 //#include "stm32f0xx_hal.h"
 
 #define MAX_TIMERS 3
-#define sec 100  //сколько тиков в секунде
+
+#ifdef ASYNC_TIMER
+  #define sec 1    //сколько тиков в секунде
+#else
+  #define sec 100  //сколько тиков в секунде
+#endif // ASYNC_TIMER
 #define minute 60*sec
 #define hour 60*minute
 #define day 24*hour

@@ -51,7 +51,7 @@ typedef enum { CC_IDLE=0, CC_TX, CC_RX, CC_CAL } CC_State_t;
 /* Global variables **************************************************************/
 volatile uint8_t sys_timer = 0;
 extern const uint8_t preferredSettings[][2]; //можно считывать с флешки или еепром
-static uint16_t freq;
+static uint16_t freq = 0x4B18;
 static uint16_t rssi_acc;
 /* END Global variables **********************************************************/
 
@@ -196,6 +196,17 @@ void ccIdle(void) {
   }
   else {
     cnt = 0;
+    if(rssi_acc>(old_rssi + 8)) {
+      freq+=5;
+      cc2500_change_freq(freq);
+
+    }
+    else if(rssi_acc < (old_rssi - 8)) {//check underflow!
+      freq-=5;
+      cc2500_change_freq(freq);
+
+    }
+    old_rssi = rssi_acc;
 
   }
 
@@ -232,7 +243,8 @@ void ccRx(void) {
   command(SFRX); // flush receiver FIFO if owerflow state
   command(SIDLE); // turn CC2500 into idle mode
   command(SFRX); // flush receiver FIFO in IDDLE mode
-  receiver_buf[3] =
+  receiver_buf[2] = *(uint8_t *)&freq;
+  receiver_buf[3] = *(((uint8_t *)&freq)+1);
   receiver_buf[4] = cc2500_get_status(CC2500_RSSI);
   receiver_buf[5] = cc2500_get_rssi();
   RS485_DE_HIGH;
